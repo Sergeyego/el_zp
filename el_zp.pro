@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -17,6 +17,8 @@ TEMPLATE = app
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
 
+include(xlsx/qtxlsx.pri)
+
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
@@ -25,10 +27,44 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    db/dbcombobox.cpp \
+    db/dbdateedit.cpp \
+    db/dbdelegate.cpp \
+    db/dblogin.cpp \
+    db/dbmapper.cpp \
+    db/dbrelationeditdialog.cpp \
+    db/dbtablemodel.cpp \
+    db/dbviewer.cpp \
+    db/executor.cpp \
+    db/tablemodel.cpp \
+    formcalcwage.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    db/dbcombobox.h \
+    db/dbdateedit.h \
+    db/dbdelegate.h \
+    db/dblogin.h \
+    db/dbmapper.h \
+    db/dbrelationeditdialog.h \
+    db/dbtablemodel.h \
+    db/dbviewer.h \
+    db/executor.h \
+    db/tablemodel.h \
+    formcalcwage.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    db/dblogin.ui \
+    db/dbrelationeditdialog.ui \
+    formcalcwage.ui
+
+RC_FILE = ico.rc
+
+DISTFILES += \
+    ico.rc
+
+RESOURCES += \
+    res.qrc
+

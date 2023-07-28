@@ -17,6 +17,9 @@ public:
 
 private:
     Ui::FormCalcWage *ui;
+
+private slots:
+    void reCalc();
 };
 
 #endif // FORMCALCWAGE_H
