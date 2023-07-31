@@ -72,6 +72,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonTabelShort">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Ведомость кратко</string>
        </property>
@@ -79,6 +82,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonTabel">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Табель по видам работ</string>
        </property>
@@ -98,15 +104,18 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <widget class="QListView" name="listViewRab"/>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QTableView" name="tableViewCalc"/>
+        <widget class="TableView" name="tableViewCalc"/>
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
           <widget class="QPushButton" name="pushButtonSave">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Запись</string>
            </property>
@@ -114,6 +123,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="pushButtonJob">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>По видам работ</string>
            </property>
@@ -147,6 +159,20 @@
           </widget>
          </item>
          <item>
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>Св.ур.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEditExtr">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QLabel" name="label_4">
            <property name="text">
             <string>Пр. кач.</string>
@@ -168,7 +194,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEditPremNorn">
+          <widget class="QLineEdit" name="lineEditPremNorm">
            <property name="readOnly">
             <bool>true</bool>
            </property>
@@ -196,6 +222,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TableView</class>
+   <extends>QTableView</extends>
+   <header>tableview.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

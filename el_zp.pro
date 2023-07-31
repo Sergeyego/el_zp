@@ -38,7 +38,9 @@ SOURCES += \
     db/dbviewer.cpp \
     db/executor.cpp \
     db/tablemodel.cpp \
-    formcalcwage.cpp
+    formcalcwage.cpp \
+    tableview.cpp \
+    modelro.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -52,7 +54,9 @@ HEADERS += \
     db/dbviewer.h \
     db/executor.h \
     db/tablemodel.h \
-    formcalcwage.h
+    formcalcwage.h \
+    tableview.h \
+    modelro.h
 
 FORMS += \
         mainwindow.ui \

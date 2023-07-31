@@ -2,6 +2,8 @@
 #define FORMCALCWAGE_H
 
 #include <QWidget>
+#include "modelro.h"
+#include <QSqlQuery>
 
 namespace Ui {
 class FormCalcWage;
@@ -17,9 +19,16 @@ public:
 
 private:
     Ui::FormCalcWage *ui;
+    ModelRo *modelRab;
+    ModelRo *modelTableData;
+    void setBlock(bool b);
 
 private slots:
     void reCalc();
+    void updTableData(QModelIndex ind);
+    void saveTabelXlsx();
+    void tabelShort();
+    void tabel();
 };
 
 #endif // FORMCALCWAGE_H
