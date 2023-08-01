@@ -126,7 +126,7 @@ void FormCalcWage::reCalc()
                     snorm+=td.nrm;
                     stot+=td.total;
                 }
-                ui->labelItogo->setText(QString("З.пл: %1 ₽; Св.ур.: %2 ₽; Прем.кач.: %3 ₽; Прем.норм.: %4 ₽; Итого: %5 ₽;")
+                ui->labelItogo->setText(QString("З.пл=%1 р.; Св.ур.=%2 р.; Прем.кач.=%3 р.; Прем.норм.=%4 р.; Итого=%5 р.;")
                                         .arg(QLocale().toString(szpl,'f',2))
                                         .arg(QLocale().toString(sextr,'f',2))
                                         .arg(QLocale().toString(sbonus,'f',2))
