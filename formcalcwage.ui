@@ -71,6 +71,20 @@
       </spacer>
      </item>
      <item>
+      <widget class="QLabel" name="labelItogo">
+       <property name="font">
+        <font>
+         <pointsize>8</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Итого:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="pushButtonTabelShort">
        <property name="enabled">
         <bool>false</bool>

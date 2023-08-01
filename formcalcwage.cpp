@@ -6,6 +6,8 @@ FormCalcWage::FormCalcWage(QWidget *parent) :
     ui(new Ui::FormCalcWage)
 {
     ui->setupUi(this);
+    loadSettings();
+
     ui->dateEditBeg->setDate(QDate::currentDate().addDays(-QDate::currentDate().day()+1));
     ui->dateEditEnd->setDate(QDate::currentDate());
 
@@ -37,6 +39,7 @@ FormCalcWage::FormCalcWage(QWidget *parent) :
 
 FormCalcWage::~FormCalcWage()
 {
+    saveSettings();
     delete ui;
 }
 
@@ -47,6 +50,18 @@ void FormCalcWage::setBlock(bool b)
     ui->pushButtonTabelShort->setDisabled(b);
 }
 
+void FormCalcWage::loadSettings()
+{
+    QSettings settings("szsm", QApplication::applicationName());
+    ui->splitter->restoreState(settings.value("calc_wage_splitter_width").toByteArray());
+}
+
+void FormCalcWage::saveSettings()
+{
+    QSettings settings("szsm", QApplication::applicationName());
+    settings.setValue("calc_wage_splitter_width",ui->splitter->saveState());
+}
+
 void FormCalcWage::reCalc()
 {
     int id_rab=-1;
@@ -55,6 +70,7 @@ void FormCalcWage::reCalc()
     }
     modelTableData->clear();
     mapData.clear();
+    ui->labelItogo->setText("Итого:");
     updTitle();
     QSqlQuery queryCre;
     queryCre.prepare("select * from zrw_prep_wage(:d1, :d2)");
@@ -63,7 +79,7 @@ void FormCalcWage::reCalc()
     if (queryCre.exec()){
         QSqlQuery query;
         query.prepare("select rr.id, rr.fam, rr.nam, rr.otc, rr.tabel, rr.snam || ' ' || rp.nam || ' ' || (case when rr2.num<>'-' then '('||rr2.num||' разряд)' else '' end), "
-                      "rp.nam || ' ' || (case when rr2.num<>'-' then '('||rr2.num||' разряд)' else '' end), zwc.sdat, zwc.szpl::numeric(18,2), zwc.sdopl::numeric(18,2), zwc.sextr::numeric(18,2), zwc.sbonus::numeric(18,2), zwc.snrm::numeric(18,2), zwc.svid::numeric(18,2) "
+                      "rp.nam || ' ' || (case when rr2.num<>'-' then '('||rr2.num||' разряд)' else '' end), zwc.sdat, zwc.szpl, zwc.sdopl, zwc.sextr, zwc.sbonus, zwc.snrm, zwc.svid "
                       "from rab_rab rr "
                       "inner join (select zw.id as id, "
                       "            count(distinct zw.dat) as sdat, sum(zw.zpl) as szpl, sum(zw.dopl) as sdopl, sum(zw.extr) as sextr, sum(zw.bonus) as sbonus, sum(zw.nrm) as snrm, sum(zw.zpl+zw.extr+zw.bonus+zw.nrm) as svid "
@@ -83,13 +99,14 @@ void FormCalcWage::reCalc()
         setBlock(!ok);
         if (ok){
             QSqlQuery queryCont;
-            queryCont.prepare("select zw.id, rl.naim, sum(zw.kvo) as kvo, zw.tarif::numeric(18,2), sum(zw.zpl)::numeric(18,2) as zpl, sum(zw.dopl)::numeric(18,2) as dopl, sum(zw.extr)::numeric(18,2) as extr, "
-                              "sum(zw.bonus)::numeric(18,2) as bonus, sum(zw.nrm)::numeric(18,2) as nrm, sum(zw.zpl+zw.extr+zw.bonus+zw.nrm)::numeric(18,2) as total "
+            queryCont.prepare("select zw.id, rl.naim, sum(zw.kvo) as kvo, zw.tarif, sum(zw.zpl) as zpl, sum(zw.dopl) as dopl, sum(zw.extr) as extr, "
+                              "sum(zw.bonus) as bonus, sum(zw.nrm) as nrm, sum(zw.zpl+zw.extr+zw.bonus+zw.nrm) as total "
                               "from ztw_wage zw "
                               "inner join rab_liter rl on rl.id=zw.id_lit "
                               "group by zw.id, rl.naim, zw.tarif "
                               "order by zw.id, rl.naim desc");
             if (queryCont.exec()){
+                double szpl=0.0, sextr=0.0, sbonus=0.0, snorm=0.0, stot=0.0;
                 while (queryCont.next()){
                     int id = queryCont.value(0).toInt();
                     tabelData td;
@@ -103,7 +120,18 @@ void FormCalcWage::reCalc()
                     td.nrm=queryCont.value(8).toDouble();
                     td.total=queryCont.value(9).toDouble();
                     mapData.insert(id,td);
+                    szpl+=td.zpl;
+                    sextr+=td.extr;
+                    sbonus+=td.bonus;
+                    snorm+=td.nrm;
+                    stot+=td.total;
                 }
+                ui->labelItogo->setText(QString("З.пл: %1 ₽; Св.ур.: %2 ₽; Прем.кач.: %3 ₽; Прем.норм.: %4 ₽; Итого: %5 ₽;")
+                                        .arg(QLocale().toString(szpl,'f',2))
+                                        .arg(QLocale().toString(sextr,'f',2))
+                                        .arg(QLocale().toString(sbonus,'f',2))
+                                        .arg(QLocale().toString(snorm,'f',2))
+                                        .arg(QLocale().toString(stot,'f',2)));
             } else {
                 QMessageBox::critical(this,"Error",queryCont.lastError().text(),QMessageBox::Cancel);
             }

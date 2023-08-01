@@ -25,6 +25,8 @@ private:
     ModelRo *modelTableData;
     TableModel *modelTableDataVid;
     void setBlock(bool b);
+    void loadSettings();
+    void saveSettings();
     struct tabelData {
         QString name;
         double kvo;
