@@ -122,10 +122,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButtonJob">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
+          <widget class="QCheckBox" name="checkBoxVid">
            <property name="text">
             <string>По видам работ</string>
            </property>

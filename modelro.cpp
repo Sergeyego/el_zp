@@ -11,7 +11,7 @@ QVariant ModelRo::data(const QModelIndex &item, int role) const
     QVariant::Type type=origData.type();
     if (role==Qt::DisplayRole){
         if (type==QMetaType::Double){
-            return (origData.isNull()) ? QString("") : QLocale().toString(origData.toDouble(),'f',dec);
+            return (origData.isNull()) ? QString("") : QLocale().toString(origData.toDouble(),'f',mdecimal.value(item.column(),dec));
         } else if (type==QMetaType::QDate){
             return (origData.isNull()) ? QString("") : origData.toDate().toString("dd.MM.yy");
         }
@@ -43,6 +43,11 @@ void ModelRo::setQuery(const QSqlQuery &query)
 void ModelRo::setDecimal(int d)
 {
     dec=d;
+}
+
+void ModelRo::setDecimalForColumn(int section, int d)
+{
+    mdecimal.insert(section,d);
 }
 
 void ModelRo::select()

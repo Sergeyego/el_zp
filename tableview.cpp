@@ -58,8 +58,8 @@ void TableView::resizeToContents()
                     max=fontMetrics().width(l.at(k));
             }
         }
-        if (max>300) {
-            max=300;
+        if (max>350) {
+            max=350;
         }
         setColumnWidth(i,max+12);
     }
@@ -143,11 +143,18 @@ void TableView::save(QString fnam, int dec, bool fitToHeight, Qt::ScreenOrientat
                     QVariant value=this->model()->data(this->model()->index(i,j),role);
                     int d=(value.typeName()==QString("int"))? 0 : dec;
                     if (d<0){
-                        d=2;
+                        QString v = this->model()->data(this->model()->index(i,j),Qt::DisplayRole).toString();
+                        v=v.replace(',','.');
+                        int p = v.lastIndexOf('.');
+                        if (p>0 && p<v.size()-1){
+                            d=v.size()-1-p;
+                        } else {
+                            d=1;
+                        }
                     }
                     if ((value.typeName()==QString("double"))||value.typeName()==QString("int")){
                         if (d>=1){
-                            QString fmt=QString("# ##0.%1").arg((0),d,'d',0,QChar('0'));
+                            QString fmt=QString("# ### ##0.%1").arg((0),d,'d',0,QChar('0'));
                             numFormat.setNumberFormat(fmt);
                         } else {
                             numFormat.setNumberFormat("0");
@@ -169,9 +176,12 @@ void TableView::save(QString fnam, int dec, bool fitToHeight, Qt::ScreenOrientat
         QSettings settings("szsm", QApplication::applicationName());
         QDir dir(settings.value("savePath",QDir::homePath()).toString());
         QString filename = QFileDialog::getSaveFileName(nullptr,QString::fromUtf8("Сохранить документ"),
-                                                        dir.path()+"/"+fnam,
+                                                        dir.path()+"/"+fnam+".xlsx",
                                                         QString::fromUtf8("Documents (*.xlsx)") );
         if (!filename.isEmpty()){
+            if (filename.right(5)!=".xlsx"){
+                filename+=".xlsx";
+            }
             xlsx.saveAs(filename);
             QFile file(filename);
             QFileInfo info(file);
