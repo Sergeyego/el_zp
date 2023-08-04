@@ -401,7 +401,7 @@ void FormCalcWage::tabel()
     ws->setColumnWidth(5,5,20);
     ws->setColumnWidth(6,6,11);
     ws->setColumnWidth(7,7,6);
-    ws->setColumnWidth(8,8,9);
+    ws->setColumnWidth(8,8,11);
     ws->setColumnWidth(9,9,9);
     ws->setColumnWidth(10,10,10);
     ws->setColumnWidth(11,11,10);
@@ -500,12 +500,8 @@ void FormCalcWage::tabel()
         ws->writeBlank(m,10,strFormat);
         ws->writeBlank(m,11,strFormat);
 
-        if (kvoDay!=0){
-            numFormat.setNumberFormat(QString("0.%1").arg((0),2,'d',0,QChar('0')));
-            ws->writeNumeric(m,12,total/kvoDay,numFormat);
-        } else {
-            ws->writeBlank(m,12,strFormat);
-        }
+        numFormat.setNumberFormat(QString("0.%1").arg((0),2,'d',0,QChar('0')));
+        ws->write(m,12,QString("=F%1/G%2").arg(m).arg(m),numFormat);
 
         ws->writeBlank(m,13,strFormat);
         ws->writeBlank(m,14,strFormat);
