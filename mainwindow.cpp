@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     actAction(ui->actionCalcWage,&MainWindow::newFormcalcWage);
 
     loadSettings();
-    connect(ui->tabWidget,SIGNAL(tabCloseRequested(int)),this,SLOT(closeTab(int)));
+    QObject::connect(ui->tabWidget,&QTabWidget::tabCloseRequested,this,&MainWindow::closeTab);
 }
 
 MainWindow::~MainWindow()
