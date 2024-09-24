@@ -46,6 +46,7 @@ private slots:
     void updTableData(QModelIndex ind);
     void saveTabelXlsx();
     void tabelShort();
+    void tabelDop();
     void tabel();
     void setDataModel();
     void updTitle();

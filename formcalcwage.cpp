@@ -32,6 +32,7 @@ FormCalcWage::FormCalcWage(QWidget *parent) :
     connect(ui->pushButtonCalc,SIGNAL(clicked(bool)),this,SLOT(reCalc()));
     connect(ui->listViewRab->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(updTableData(QModelIndex)));
     connect(ui->pushButtonSave,SIGNAL(clicked(bool)),this,SLOT(saveTabelXlsx()));
+    connect(ui->pushButtonDop,SIGNAL(clicked(bool)),this,SLOT(tabelDop()));
     connect(ui->pushButtonTabelShort,SIGNAL(clicked(bool)),this,SLOT(tabelShort()));
     connect(ui->pushButtonTabel,SIGNAL(clicked(bool)),this,SLOT(tabel()));
     connect(ui->checkBoxVid,SIGNAL(clicked(bool)),this,SLOT(setDataModel()));
@@ -48,6 +49,7 @@ void FormCalcWage::setBlock(bool b)
     ui->pushButtonSave->setDisabled(b);
     ui->pushButtonTabel->setDisabled(b);
     ui->pushButtonTabelShort->setDisabled(b);
+    ui->pushButtonDop->setDisabled(b);
 }
 
 void FormCalcWage::loadSettings()
@@ -287,12 +289,12 @@ void FormCalcWage::tabelShort()
 
     for (int i=0; i<rabcount; i++){
 
-        int id_rab;
+        //int id_rab;
         QString firstName, lastName, middleName, prof;
         int kvoDay;
         double zp, ex, premk, premn, total;
 
-        id_rab=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,0),Qt::EditRole).toInt();
+        //id_rab=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,0),Qt::EditRole).toInt();
         firstName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,1),Qt::EditRole).toString();
         lastName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,2),Qt::EditRole).toString();
         middleName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,3),Qt::EditRole).toString();
@@ -332,6 +334,142 @@ void FormCalcWage::tabelShort()
     ws->write(m,8,QString("=SUM(H3:H%1)").arg(m-1),numFormat);
     ws->write(m,9,QString("=SUM(I3:I%1)").arg(m-1),numFormat);
     ws->write(m,10,QString("=SUM(J3:J%1)").arg(m-1),numFormat);
+
+    QDir dir(QDir::homePath());
+    QString filename = QFileDialog::getSaveFileName(nullptr,QString::fromUtf8("Сохранить файл"),
+                                                    dir.path()+"/"+title+".xlsx",
+                                                    QString::fromUtf8("Documents (*.xlsx)") );
+    if (!filename.isEmpty()){
+        if (filename.right(5)!=".xlsx"){
+            filename+=".xlsx";
+        }
+        xlsx.saveAs(filename);
+    }
+}
+
+void FormCalcWage::tabelDop()
+{
+    int rabcount=ui->listViewRab->model()->rowCount();
+    if (!rabcount){
+        return;
+    }
+
+    QString title=QString("Приложение к начислению з.пл. за период с %1 по %2").arg(ui->dateEditBeg->date().toString("dd.MM.yy")).arg(ui->dateEditEnd->date().toString("dd.MM.yy"));
+
+    Document xlsx;
+    Worksheet *ws=xlsx.currentWorksheet();
+    XlsxPageSetup pageSetup;
+    pageSetup.fitToPage=true;
+    pageSetup.fitToWidth=1;
+    pageSetup.fitToHeight=0;
+    pageSetup.orientation=XlsxPageSetup::portrait;
+    ws->setPageSetup(pageSetup);
+    QFont defaultFont("Arial", 10);
+    QFont titleFont("Arial", 10);
+    titleFont.setBold(true);
+
+    Format strFormat;
+    strFormat.setBorderStyle(Format::BorderThin);
+    strFormat.setFont(defaultFont);
+    Format numFormat;
+    numFormat.setBorderStyle(Format::BorderThin);
+    numFormat.setFont(defaultFont);
+    Format procFormat;
+    procFormat.setBorderStyle(Format::BorderThin);
+    procFormat.setFont(defaultFont);
+    procFormat.setNumberFormat("0.00%");
+
+    Format titleFormat;
+    titleFormat.setBorderStyle(Format::BorderNone);
+    titleFormat.setFont(titleFont);
+    titleFormat.setTextWarp(true);
+    titleFormat.setHorizontalAlignment(Format::AlignHCenter);
+    titleFormat.setVerticalAlignment(Format::AlignVCenter);
+
+    Format title2Format;
+    title2Format.setBorderStyle(Format::BorderNone);
+    title2Format.setFont(titleFont);
+    title2Format.setTextWarp(true);
+    title2Format.setHorizontalAlignment(Format::AlignRight);
+    title2Format.setVerticalAlignment(Format::AlignVCenter);
+
+    Format headerFormat;
+    headerFormat.setBorderStyle(Format::BorderThin);
+    headerFormat.setFont(titleFont);
+    headerFormat.setTextWarp(true);
+    headerFormat.setHorizontalAlignment(Format::AlignHCenter);
+    headerFormat.setVerticalAlignment(Format::AlignVCenter);
+
+    int m=1;
+    ws->setColumnWidth(1,1,15);
+    ws->setColumnWidth(2,2,15);
+    ws->setColumnWidth(3,3,15);
+    ws->setColumnWidth(4,4,40);
+    ws->setColumnWidth(5,5,13);
+    ws->setColumnWidth(6,6,13);
+    ws->setColumnWidth(7,7,13);
+
+    ws->setRowHeight(m,m+1,80);
+    ws->mergeCells(CellRange(m,1,m,7),title2Format);
+    ws->writeString(m,1,tr("Генеральному директору ООО \"СЗСМ\"\nКукушкину А.В.\nот начальника производства\n\n________________"),title2Format);
+    m++;
+    ws->setRowHeight(m,m+1,40);
+    ws->mergeCells(CellRange(m,1,m,7),titleFormat);
+    ws->writeString(m,1,title,titleFormat);
+    m++;
+    QString year=QString::number(ui->dateEditBeg->date().year());
+    QString month=QDate::longMonthName(ui->dateEditBeg->date().month(),QDate::StandaloneFormat);
+    QString tit2=tr("Премия по итогам работы за ")+month+" "+year+QString(" г.");
+    ws->setRowHeight(m,m+1,40);
+    ws->mergeCells(CellRange(m,1,m,7),titleFormat);
+    ws->writeString(m,1,tit2,titleFormat);
+    m++;
+    ws->writeString(m,1,"Фамилия",headerFormat);
+    ws->writeString(m,2,"Имя",headerFormat);
+    ws->writeString(m,3,"Отчество",headerFormat);
+    ws->writeString(m,4,"Профессия, разряд",headerFormat);
+    ws->writeString(m,5,"Зарплата",headerFormat);
+    ws->writeString(m,6,"Итого",headerFormat);
+    ws->writeString(m,7,"Премия",headerFormat);
+    m++;
+
+    for (int i=0; i<rabcount; i++){
+
+        QString firstName, lastName, middleName, prof;
+        int kvoDay;
+        double zp, total;
+
+        firstName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,1),Qt::EditRole).toString();
+        lastName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,2),Qt::EditRole).toString();
+        middleName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,3),Qt::EditRole).toString();
+        prof=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,6),Qt::EditRole).toString();
+
+        kvoDay=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,7),Qt::EditRole).toInt();
+        zp=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,8),Qt::EditRole).toDouble();
+        total=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,13),Qt::EditRole).toDouble();
+
+
+        if (!kvoDay) continue;
+
+        ws->writeString(m,1,firstName,strFormat);
+        ws->writeString(m,2,lastName,strFormat);
+        ws->writeString(m,3,middleName,strFormat);
+        ws->writeString(m,4,prof,strFormat);
+        numFormat.setNumberFormat("0");
+        QString fmt=QString("# ### ##0.%1").arg((0),2,'d',0,QChar('0'));
+        numFormat.setNumberFormat(fmt);
+        numFormat.setNumberFormatIndex(4);
+
+        ws->writeNumeric(m,5,zp,numFormat);
+        ws->writeNumeric(m,6,total,numFormat);
+        ws->writeBlank(m,7,procFormat);
+        m++;
+
+    }
+    m++;
+    ws->setRowHeight(m,m+1,40);
+    ws->mergeCells(CellRange(m,1,m,7),titleFormat);
+    ws->writeString(m,1,tr("Начальник производства ________________"),titleFormat);
 
     QDir dir(QDir::homePath());
     QString filename = QFileDialog::getSaveFileName(nullptr,QString::fromUtf8("Сохранить файл"),
