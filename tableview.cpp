@@ -47,19 +47,29 @@ void TableView::resizeToContents()
         l=s.split("\n");
         max=0;
         for (int k=0; k<l.size(); k++){
+#if (QT_VERSION < QT_VERSION_CHECK(5, 11, 0))
             if (max<fontMetrics().width(l.at(k)))
                 max=fontMetrics().width(l.at(k));
+#else
+            if (max<fontMetrics().horizontalAdvance(l.at(k)))
+                max=fontMetrics().horizontalAdvance(l.at(k));
+#endif
         }
         for (int j=0; j<m; j++){
             s=model()->data(model()->index(j,i)).toString();
             l=s.split("\n");
             for (int k=0; k<l.size(); k++){
-                if (max<fontMetrics().width(l.at(k)))
-                    max=fontMetrics().width(l.at(k));
+#if (QT_VERSION < QT_VERSION_CHECK(5, 11, 0))
+            if (max<fontMetrics().width(l.at(k)))
+                max=fontMetrics().width(l.at(k));
+#else
+            if (max<fontMetrics().horizontalAdvance(l.at(k)))
+                max=fontMetrics().horizontalAdvance(l.at(k));
+#endif
             }
         }
-        if (max>350) {
-            max=350;
+        if (max>300) {
+            max=300;
         }
         setColumnWidth(i,max+12);
     }
@@ -143,18 +153,11 @@ void TableView::save(QString fnam, int dec, bool fitToHeight, Qt::ScreenOrientat
                     QVariant value=this->model()->data(this->model()->index(i,j),role);
                     int d=(value.typeName()==QString("int"))? 0 : dec;
                     if (d<0){
-                        QString v = this->model()->data(this->model()->index(i,j),Qt::DisplayRole).toString();
-                        v=v.replace(',','.');
-                        int p = v.lastIndexOf('.');
-                        if (p>0 && p<v.size()-1){
-                            d=v.size()-1-p;
-                        } else {
-                            d=1;
-                        }
+                        d=2;
                     }
                     if ((value.typeName()==QString("double"))||value.typeName()==QString("int")){
                         if (d>=1){
-                            QString fmt=QString("# ### ##0.%1").arg((0),d,'d',0,QChar('0'));
+                            QString fmt=QString("# ##0.%1").arg((0),d,'d',0,QChar('0'));
                             numFormat.setNumberFormat(fmt);
                         } else {
                             numFormat.setNumberFormat("0");

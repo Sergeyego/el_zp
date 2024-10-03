@@ -5,6 +5,8 @@
 #include <QAction>
 #include <QSettings>
 #include "formcalcwage.h"
+#include "formpremmon.h"
+#include "formrepnorm.h"
 
 namespace Ui {
 class MainWindow;
@@ -30,7 +32,9 @@ private:
 
 private slots:
     void closeTab(int index);
-    void newFormcalcWage();
+    void newFormCalcWage();
+    void newFormPremMon();
+    void newFormRepNorm();
 };
 
 #endif // MAINWINDOW_H

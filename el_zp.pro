@@ -26,6 +26,8 @@ include(xlsx/qtxlsx.pri)
 
 
 SOURCES += \
+    formpremmon.cpp \
+    formrepnorm.cpp \
         main.cpp \
         mainwindow.cpp \
     db/dbcombobox.cpp \
@@ -40,9 +42,12 @@ SOURCES += \
     db/tablemodel.cpp \
     formcalcwage.cpp \
     tableview.cpp \
-    modelro.cpp
+    modelro.cpp \
+    zonwidget.cpp
 
 HEADERS += \
+    formpremmon.h \
+    formrepnorm.h \
         mainwindow.h \
     db/dbcombobox.h \
     db/dbdateedit.h \
@@ -56,9 +61,12 @@ HEADERS += \
     db/tablemodel.h \
     formcalcwage.h \
     tableview.h \
-    modelro.h
+    modelro.h \
+    zonwidget.h
 
 FORMS += \
+    formpremmon.ui \
+    formrepnorm.ui \
         mainwindow.ui \
     db/dblogin.ui \
     db/dbrelationeditdialog.ui \

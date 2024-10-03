@@ -7,7 +7,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    actAction(ui->actionCalcWage,&MainWindow::newFormcalcWage);
+    actAction(ui->actionCalcWage,&MainWindow::newFormCalcWage);
+    actAction(ui->actionPremMon,&MainWindow::newFormPremMon);
+    actAction(ui->actionRepNorm,&MainWindow::newFormRepNorm);
 
     loadSettings();
     QObject::connect(ui->tabWidget,&QTabWidget::tabCloseRequested,this,&MainWindow::closeTab);
@@ -100,9 +102,23 @@ void MainWindow::closeTab(int index)
     ui->tabWidget->widget(index)->close();
 }
 
-void MainWindow::newFormcalcWage()
+void MainWindow::newFormCalcWage()
 {
     if (!exist(sender())){
         addSubWindow(new FormCalcWage(),sender());
+    }
+}
+
+void MainWindow::newFormPremMon()
+{
+    if (!exist(sender())){
+        addSubWindow(new FormPremMon(),sender());
+    }
+}
+
+void MainWindow::newFormRepNorm()
+{
+    if (!exist(sender())){
+        addSubWindow(new FormRepNorm(),sender());
     }
 }

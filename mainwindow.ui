@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
-    <height>700</height>
+    <width>1022</width>
+    <height>698</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,8 +32,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1024</width>
-     <height>22</height>
+     <width>1022</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -42,11 +42,41 @@
     </property>
     <addaction name="actionCalcWage"/>
    </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>Премии</string>
+    </property>
+    <addaction name="actionPremMon"/>
+    <addaction name="actionPremNorm"/>
+   </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>Отчеты</string>
+    </property>
+    <addaction name="actionRepNorm"/>
+   </widget>
    <addaction name="menu"/>
+   <addaction name="menu_2"/>
+   <addaction name="menu_3"/>
   </widget>
   <action name="actionCalcWage">
    <property name="text">
     <string>Расчет</string>
+   </property>
+  </action>
+  <action name="actionPremMon">
+   <property name="text">
+    <string>Ежемесячная премия</string>
+   </property>
+  </action>
+  <action name="actionPremNorm">
+   <property name="text">
+    <string>Премия за норму и качество</string>
+   </property>
+  </action>
+  <action name="actionRepNorm">
+   <property name="text">
+    <string>Выполнение норм</string>
    </property>
   </action>
  </widget>
