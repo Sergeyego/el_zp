@@ -29,7 +29,7 @@ ZonWidget::ZonWidget(QWidget *parent) :
         N=query.size();
         zonCheckBox = new ZonCheckBox*[N];
         while (query.next()) {
-            zonCheckBox[i]= new ZonCheckBox(query.value(1).toString());
+            zonCheckBox[i] = new ZonCheckBox(query.value(1).toString(),this);
             id=query.value(0).toInt();
             zonCheckBox[i]->setId(id);
             if (id==2 || id==11) zonCheckBox[i]->setChecked(true);

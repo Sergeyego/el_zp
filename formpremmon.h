@@ -2,6 +2,8 @@
 #define FORMPREMMON_H
 
 #include <QWidget>
+#include "rels.h"
+#include "db/dbmapper.h"
 
 namespace Ui {
 class FormPremMon;
@@ -17,6 +19,22 @@ public:
 
 private:
     Ui::FormPremMon *ui;
+    DbTableModel *modelPremNorm;
+    DbTableModel *modelPremMon;
+    DbTableModel *modelList;
+    DbTableModel *modelListData;
+    DbMapper *mapper;
+
+private slots:
+    void upd();
+    void updProfFinished();
+    void updZonFinished();
+    void updMonCont(QModelIndex ind);
+    void updZonCont(QModelIndex ind);
+    void updListCont(int ind);
+    void setPageNorm();
+    void setPageMon();
+    void setPageList();
 };
 
 #endif // FORMPREMMON_H

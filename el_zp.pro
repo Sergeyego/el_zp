@@ -41,6 +41,7 @@ SOURCES += \
     db/executor.cpp \
     db/tablemodel.cpp \
     formcalcwage.cpp \
+    rels.cpp \
     tableview.cpp \
     modelro.cpp \
     zonwidget.cpp
@@ -60,6 +61,7 @@ HEADERS += \
     db/executor.h \
     db/tablemodel.h \
     formcalcwage.h \
+    rels.h \
     tableview.h \
     modelro.h \
     zonwidget.h
