@@ -6,6 +6,7 @@
 #include <QSqlQuery>
 #include <QMultiHash>
 #include "db/tablemodel.h"
+#include "progressexecutor.h"
 
 namespace Ui {
 class FormCalcWage;
@@ -21,32 +22,44 @@ public:
 
 private:
     Ui::FormCalcWage *ui;
+    ProgressExecutor *sqlExecutor;
     ModelRo *modelRab;
-    ModelRo *modelTableData;
+    TableModel *modelTableData;
     TableModel *modelTableDataVid;
+    int current_id_rab;
     void setBlock(bool b);
     void loadSettings();
     void saveSettings();
     struct tabelData {
+        QDate date;
         QString name;
+        double s_kvo;
         double kvo;
+        double prk;
+        double prn;
+        double pr;
         double tarif;
         double zpl;
         double dopl;
         double extr;
-        double bonus;
-        double nrm;
+        double night;
+        double premk;
+        double premn;
+        double prem;
         double total;
     };
-    QMultiHash<int,tabelData> mapData;
+    QMultiHash<int,tabelData> hlong;
+    QMultiHash<int,tabelData> hshort;
+    QHash<int,tabelData> hsum;
     QString orgName, sign;
 
+
 private slots:
-    void reCalc();
+    void upd();
+    void updFinished();
     void updTableData(QModelIndex ind);
     void saveTabelXlsx();
     void tabelShort();
-    void tabelDop();
     void tabel();
     void setDataModel();
     void updTitle();

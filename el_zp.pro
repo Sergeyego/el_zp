@@ -41,6 +41,8 @@ SOURCES += \
     db/executor.cpp \
     db/tablemodel.cpp \
     formcalcwage.cpp \
+    progressexecutor.cpp \
+    progressreportdialog.cpp \
     rels.cpp \
     tableview.cpp \
     modelro.cpp \
@@ -61,6 +63,8 @@ HEADERS += \
     db/executor.h \
     db/tablemodel.h \
     formcalcwage.h \
+    progressexecutor.h \
+    progressreportdialog.h \
     rels.h \
     tableview.h \
     modelro.h \
@@ -72,7 +76,8 @@ FORMS += \
         mainwindow.ui \
     db/dblogin.ui \
     db/dbrelationeditdialog.ui \
-    formcalcwage.ui
+    formcalcwage.ui \
+    progressreportdialog.ui
 
 RC_FILE = ico.rc
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1067</width>
-    <height>558</height>
+    <width>1065</width>
+    <height>556</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -81,16 +81,6 @@
        </property>
        <property name="text">
         <string>Итого:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonDop">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>Приложение</string>
        </property>
       </widget>
      </item>

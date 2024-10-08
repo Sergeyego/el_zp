@@ -8,34 +8,41 @@ FormCalcWage::FormCalcWage(QWidget *parent) :
     ui->setupUi(this);
     loadSettings();
 
+    sqlExecutor = new ProgressExecutor(this);
+
     ui->dateEditBeg->setDate(QDate::currentDate().addDays(-QDate::currentDate().day()+1));
     ui->dateEditEnd->setDate(QDate::currentDate());
 
     modelRab = new ModelRo(this);
     ui->listViewRab->setModel(modelRab);
 
-    modelTableData = new ModelRo(this);
+    modelTableData = new TableModel(this);
     modelTableData->setDecimal(2);
     modelTableData->setDecimalForColumn(2,3);
     modelTableData->setDecimalForColumn(3,3);
 
-    modelTableDataVid = new TableModel;
+    modelTableDataVid = new TableModel(this);
     modelTableDataVid->setDecimal(2);
     modelTableDataVid->setDecimalForColumn(1,3);
 
-    ui->tableViewCalc->setModel(modelTableData);
-
     QStringList header;
-    header<<tr("Наименование работ")<<tr("Кол-во")<<tr("Тариф")<<tr("З.пл.")<<tr("В т.ч.допл.")<<tr("Св.ур")<<tr("Прем.кач")<<tr("Прем.норм.")<<tr("К выдаче");
-    modelTableDataVid->setHeader(header);
+    header<<tr("Дата")<<tr("Наименование работ")<<tr("Общ. кол-во")<<tr("Кол-во")<<tr("% кач.")<<tr("% норм.")<<tr("% мес.")<<tr("Тариф")<<tr("З.пл.")<<tr("Допл.")<<tr("Выход.")<<tr("Ночн.")<<tr("Прем.кач")<<tr("Прем.норм.")<<tr("Прем.мес.")<<tr("К выдаче");
+    modelTableData->setHeader(header);
 
-    connect(ui->pushButtonCalc,SIGNAL(clicked(bool)),this,SLOT(reCalc()));
+    QStringList headervid;
+    headervid<<tr("Наименование работ")<<tr("Кол-во")<<tr("Тариф")<<tr("З.пл.")<<tr("Допл.")<<tr("Выход.")<<tr("Ночн.")<<tr("Прем.кач")<<tr("Прем.норм.")<<tr("Прем.мес.")<<tr("К выдаче");
+    modelTableDataVid->setHeader(headervid);
+
+    ui->tableViewCalc->setModel(modelTableData);
+    ui->tableViewCalc->resizeToContents();
+
+    connect(ui->pushButtonCalc,SIGNAL(clicked(bool)),this,SLOT(upd()));
     connect(ui->listViewRab->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(updTableData(QModelIndex)));
     connect(ui->pushButtonSave,SIGNAL(clicked(bool)),this,SLOT(saveTabelXlsx()));
-    connect(ui->pushButtonDop,SIGNAL(clicked(bool)),this,SLOT(tabelDop()));
     connect(ui->pushButtonTabelShort,SIGNAL(clicked(bool)),this,SLOT(tabelShort()));
     connect(ui->pushButtonTabel,SIGNAL(clicked(bool)),this,SLOT(tabel()));
     connect(ui->checkBoxVid,SIGNAL(clicked(bool)),this,SLOT(setDataModel()));
+    connect(sqlExecutor,SIGNAL(finished()),this,SLOT(updFinished()));
 }
 
 FormCalcWage::~FormCalcWage()
@@ -49,7 +56,6 @@ void FormCalcWage::setBlock(bool b)
     ui->pushButtonSave->setDisabled(b);
     ui->pushButtonTabel->setDisabled(b);
     ui->pushButtonTabelShort->setDisabled(b);
-    ui->pushButtonDop->setDisabled(b);
 }
 
 void FormCalcWage::loadSettings()
@@ -64,107 +70,106 @@ void FormCalcWage::saveSettings()
     settings.setValue("calc_wage_splitter_width",ui->splitter->saveState());
 }
 
-void FormCalcWage::reCalc()
+void FormCalcWage::upd()
 {
-    int id_rab=-1;
+    setBlock(true);
     if (ui->listViewRab->model()->rowCount()){
-        id_rab=ui->listViewRab->model()->data(ui->listViewRab->model()->index(ui->listViewRab->currentIndex().row(),0),Qt::EditRole).toInt();
+        current_id_rab=ui->listViewRab->model()->data(ui->listViewRab->model()->index(ui->listViewRab->currentIndex().row(),0),Qt::EditRole).toInt();
+    } else {
+        current_id_rab=-1;
     }
     modelTableData->clear();
-    mapData.clear();
+    modelTableDataVid->clear();
+    hlong.clear();
     ui->labelItogo->setText("Итого:");
+    QString query = QString("select id, dat, fnam, s_kvo, kvo, prk, prn, pr, tarif, zpl, dopl, extr, night, premk, premn, prem, "
+                            "(zpl+dopl+extr+night+premk+premn+prem) as total from zrw_calc_wage('%1', '%2')").arg(ui->dateEditBeg->date().toString("yyyy-MM-dd")).arg(ui->dateEditEnd->date().toString("yyyy-MM-dd"));
+    sqlExecutor->setQuery(query);
+    sqlExecutor->start();
     updTitle();
-    QSqlQuery queryCre;
-    queryCre.prepare("select * from zrw_prep_wage(:d1, :d2)");
-    queryCre.bindValue(":d1",ui->dateEditBeg->date());
-    queryCre.bindValue(":d2",ui->dateEditEnd->date());
-    if (queryCre.exec()){
-        QSqlQuery query;
-        query.prepare("select rr.id, rr.fam, rr.nam, rr.otc, rr.tabel, rr.snam || ' ' || rp.nam || ' ' || (case when rr2.num<>'-' then '('||rr2.num||' разряд)' else '' end), "
-                      "rp.nam || ' ' || (case when rr2.num<>'-' then '('||rr2.num||' разряд)' else '' end), zwc.sdat, zwc.szpl, zwc.sdopl, zwc.sextr, zwc.sbonus, zwc.snrm, zwc.svid "
-                      "from rab_rab rr "
-                      "inner join (select zw.id as id, "
-                      "            count(distinct zw.dat) as sdat, sum(zw.zpl) as szpl, sum(zw.dopl) as sdopl, sum(zw.extr) as sextr, sum(zw.bonus) as sbonus, sum(zw.nrm) as snrm, sum(zw.zpl+zw.extr+zw.bonus+zw.nrm) as svid "
-                      "            from ztw_wage zw group by zw.id) as zwc on zwc.id = rr.id "
-                      "left join (select rq.id_rab as id_rab, max(rq.dat) as mdat from rab_qual rq "
-                      "    where rq.dat <=:d3 and rq.id_prof <> 0 "
-                      "    group by rq.id_rab ) as rh on rh.id_rab=rr.id "
-                      "left join rab_qual rq2 on rq2.id_rab = rh.id_rab and rq2.dat = rh.mdat "
-                      "left join rab_prof rp on rp.id = rq2.id_prof "
-                      "left join rab_razr rr2 on rr2.id = rq2.id_razr "
-                      "order by rr.fam, rr.nam, rr.otc");
-        query.bindValue(":d3",ui->dateEditEnd->date());
-        if (modelRab->execQuery(query)){
-            ui->listViewRab->setModelColumn(5);
-        }
-        bool ok = ui->listViewRab->model()->rowCount();
-        setBlock(!ok);
-        if (ok){
-            QSqlQuery queryCont;
-            queryCont.prepare("select zw.id, rl.naim, sum(zw.kvo) as kvo, zw.tarif, sum(zw.zpl) as zpl, sum(zw.dopl) as dopl, sum(zw.extr) as extr, "
-                              "sum(zw.bonus) as bonus, sum(zw.nrm) as nrm, sum(zw.zpl+zw.extr+zw.bonus+zw.nrm) as total "
-                              "from ztw_wage zw "
-                              "inner join rab_liter rl on rl.id=zw.id_lit "
-                              "group by zw.id, rl.naim, zw.tarif "
-                              "order by zw.id, rl.naim desc");
-            if (queryCont.exec()){
-                double szpl=0.0, sextr=0.0, sbonus=0.0, snorm=0.0, stot=0.0;
-                while (queryCont.next()){
-                    int id = queryCont.value(0).toInt();
-                    tabelData td;
-                    td.name=queryCont.value(1).toString();
-                    td.kvo=queryCont.value(2).toDouble();
-                    td.tarif=queryCont.value(3).toDouble();
-                    td.zpl=queryCont.value(4).toDouble();
-                    td.dopl=queryCont.value(5).toDouble();
-                    td.extr=queryCont.value(6).toDouble();
-                    td.bonus=queryCont.value(7).toDouble();
-                    td.nrm=queryCont.value(8).toDouble();
-                    td.total=queryCont.value(9).toDouble();
-                    mapData.insert(id,td);
-                    szpl+=td.zpl;
-                    sextr+=td.extr;
-                    sbonus+=td.bonus;
-                    snorm+=td.nrm;
-                    stot+=td.total;
-                }
-                ui->labelItogo->setText(QString("З.пл=%1 р.; Св.ур.=%2 р.; Прем.кач.=%3 р.; Прем.норм.=%4 р.; Итого=%5 р.;")
-                                        .arg(QLocale().toString(szpl,'f',2))
-                                        .arg(QLocale().toString(sextr,'f',2))
-                                        .arg(QLocale().toString(sbonus,'f',2))
-                                        .arg(QLocale().toString(snorm,'f',2))
-                                        .arg(QLocale().toString(stot,'f',2)));
-            } else {
-                QMessageBox::critical(this,"Error",queryCont.lastError().text(),QMessageBox::Cancel);
-            }
-            int currentRow=0;
-            if (id_rab>=0){
-                for (int i=0; i<ui->listViewRab->model()->rowCount(); i++){
-                    if (ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,0),Qt::EditRole).toInt()==id_rab){
-                        currentRow=i;
-                        break;
-                    }
-                }
-            }
-            ui->listViewRab->setCurrentIndex(ui->listViewRab->model()->index(currentRow,5));
-        } else {
-            ui->lineEditWage->clear();
-            ui->lineEditExtr->clear();
-            ui->lineEditPremQual->clear();
-            ui->lineEditPremNorm->clear();
-            ui->lineEditTotal->clear();
-        }
-    } else {
-        QMessageBox::critical(this,"Error",queryCre.lastError().text(),QMessageBox::Cancel);
+}
+
+void FormCalcWage::updFinished()
+{
+
+    QVector<QVector<QVariant>> data = sqlExecutor->getData();
+    QSqlQuery query;
+    query.prepare("select rr.id, rr.fam, rr.nam, rr.otc, rr.tabel, rr.snam || ' ' || rp.nam || ' ' || (case when rr2.num<>'-' then '('||rr2.num||' разряд)' else '' end), "
+                  "rp.nam || ' ' || (case when rr2.num<>'-' then '('||rr2.num||' разряд)' else '' end), zwc.sdat "
+                  "from rab_rab rr "
+                  "inner join ( "
+                  "    select rs.id_rab as id_rab, count(distinct rj.dat) as sdat from rab_share rs "
+                  "    inner join rab_job rj on rj.id = rs.id_job "
+                  "    where rj.dat between :d1 and :d2 "
+                  "    group by rs.id_rab ) as zwc on zwc.id_rab = rr.id "
+                  "left join (select rq.id_rab as id_rab, max(rq.dat) as mdat from rab_qual rq "
+                  "    where rq.dat <= :d3 and rq.id_prof <> 0 "
+                  "    group by rq.id_rab ) as rh on rh.id_rab=rr.id "
+                  "left join rab_qual rq2 on rq2.id_rab = rh.id_rab and rq2.dat = rh.mdat "
+                  "left join rab_prof rp on rp.id = rq2.id_prof "
+                  "left join rab_razr rr2 on rr2.id = rq2.id_razr "
+                  "order by rr.fam, rr.nam, rr.otc");
+    query.bindValue(":d1",ui->dateEditBeg->date());
+    query.bindValue(":d2",ui->dateEditEnd->date());
+    query.bindValue(":d3",ui->dateEditEnd->date());
+    if (modelRab->execQuery(query)){
+        ui->listViewRab->setModelColumn(5);
+    }
+    bool ok = ui->listViewRab->model()->rowCount();
+    setBlock(!ok);
+    for (QVector<QVariant> row : data){
+        tabelData d;
+        d.date=row[1].toDate();
+        d.name=row[2].toString();
+        d.s_kvo=row[3].toDouble();
+        d.kvo=row[4].toDouble();
+        d.prk=row[5].toDouble();
+        d.prn=row[6].toDouble();
+        d.pr=row[7].toDouble();
+        d.tarif=row[8].toDouble();
+        d.zpl=row[9].toDouble();
+        d.dopl=row[10].toDouble();
+        d.extr=row[11].toDouble();
+        d.night=row[12].toDouble();
+        d.premk=row[13].toDouble();
+        d.premn=row[14].toDouble();
+        d.prem=row[15].toDouble();
+        d.total=row[16].toDouble();
+        hlong.insert(row[0].toInt(),d);
     }
 }
+
+void FormCalcWage::setDataModel()
+{
+    if (ui->checkBoxVid->isChecked()){
+        ui->tableViewCalc->setModel(modelTableDataVid);
+    } else {
+        ui->tableViewCalc->setModel(modelTableData);
+    }
+    ui->tableViewCalc->resizeToContents();
+}
+
+void FormCalcWage::updTitle()
+{
+    QSqlQuery query;
+    query.prepare("select fnam, sign_norm_el from hoz where id=11");
+    if (query.exec()){
+        while (query.next()){
+            orgName=query.value(0).toString();
+            sign=query.value(1).toString();
+        }
+    } else {
+        QMessageBox::critical(NULL,"Error",query.lastError().text(),QMessageBox::Cancel);
+    }
+}
+
 
 void FormCalcWage::updTableData(QModelIndex ind)
 {
 
     int id_rb=ui->listViewRab->model()->data(ui->listViewRab->model()->index(ind.row(),0),Qt::EditRole).toInt();
 
-    ui->lineEditWage->setText(QLocale().toString(ui->listViewRab->model()->data(ui->listViewRab->model()->index(ind.row(),8),Qt::EditRole).toDouble(),'f',2));
+    /*ui->lineEditWage->setText(QLocale().toString(ui->listViewRab->model()->data(ui->listViewRab->model()->index(ind.row(),8),Qt::EditRole).toDouble(),'f',2));
     ui->lineEditExtr->setText(QLocale().toString(ui->listViewRab->model()->data(ui->listViewRab->model()->index(ind.row(),10),Qt::EditRole).toDouble(),'f',2));
     ui->lineEditPremQual->setText(QLocale().toString(ui->listViewRab->model()->data(ui->listViewRab->model()->index(ind.row(),11),Qt::EditRole).toDouble(),'f',2));
     ui->lineEditPremNorm->setText(QLocale().toString(ui->listViewRab->model()->data(ui->listViewRab->model()->index(ind.row(),12),Qt::EditRole).toDouble(),'f',2));
@@ -188,24 +193,56 @@ void FormCalcWage::updTableData(QModelIndex ind)
         modelTableData->setHeaderData(7,Qt::Horizontal,tr("Прем.кач"));
         modelTableData->setHeaderData(8,Qt::Horizontal,tr("Прем.нор."));
         modelTableData->setHeaderData(9,Qt::Horizontal,tr("К выдаче"));
-    }
+    }*/
 
-    QVector<QVector<QVariant>> dataVid;
-    QList<tabelData> list = mapData.values(id_rb);
-    for (tabelData data : list){
+    QVector<QVector<QVariant>> dataLong;
+    QList<tabelData> list = hlong.values(id_rb);
+
+    QList<tabelData>::const_iterator data = list.end();
+     while (data != list.begin()) {
+         --data;
+         QVector<QVariant> row;
+         row.push_back((*data).date);
+         row.push_back((*data).name);
+         row.push_back((*data).s_kvo);
+         row.push_back((*data).kvo);
+         row.push_back((*data).prk);
+         row.push_back((*data).prn);
+         row.push_back((*data).pr);
+         row.push_back((*data).tarif);
+         row.push_back((*data).zpl);
+         row.push_back((*data).dopl);
+         row.push_back((*data).extr);
+         row.push_back((*data).night);
+         row.push_back((*data).premk);
+         row.push_back((*data).premn);
+         row.push_back((*data).prem);
+         row.push_back((*data).total);
+         dataLong.push_back(row);
+     }
+
+
+    /*for (tabelData data : list){
         QVector<QVariant> row;
+        row.push_back(data.date);
         row.push_back(data.name);
+        row.push_back(data.s_kvo);
         row.push_back(data.kvo);
+        row.push_back(data.prk);
+        row.push_back(data.prn);
+        row.push_back(data.pr);
         row.push_back(data.tarif);
         row.push_back(data.zpl);
         row.push_back(data.dopl);
         row.push_back(data.extr);
-        row.push_back(data.bonus);
-        row.push_back(data.nrm);
+        row.push_back(data.night);
+        row.push_back(data.premk);
+        row.push_back(data.premn);
+        row.push_back(data.prem);
         row.push_back(data.total);
-        dataVid.push_back(row);
-    }
-    modelTableDataVid->setModelData(dataVid);
+        dataLong.push_back(row);
+    }*/
+    modelTableData->setModelData(dataLong);
 
     ui->tableViewCalc->resizeToContents();
 }
@@ -289,8 +326,7 @@ void FormCalcWage::tabelShort()
 
     for (int i=0; i<rabcount; i++){
 
-        //int id_rab;
-        QString firstName, lastName, middleName, prof;
+        /*QString firstName, lastName, middleName, prof;
         int kvoDay;
         double zp, ex, premk, premn, total;
 
@@ -325,7 +361,7 @@ void FormCalcWage::tabelShort()
         ws->writeNumeric(m,8,premk,numFormat);
         ws->writeNumeric(m,9,premn,numFormat);
         ws->writeNumeric(m,10,total,numFormat);
-        m++;
+        m++;*/
 
     }
 
@@ -334,142 +370,6 @@ void FormCalcWage::tabelShort()
     ws->write(m,8,QString("=SUM(H3:H%1)").arg(m-1),numFormat);
     ws->write(m,9,QString("=SUM(I3:I%1)").arg(m-1),numFormat);
     ws->write(m,10,QString("=SUM(J3:J%1)").arg(m-1),numFormat);
-
-    QDir dir(QDir::homePath());
-    QString filename = QFileDialog::getSaveFileName(nullptr,QString::fromUtf8("Сохранить файл"),
-                                                    dir.path()+"/"+title+".xlsx",
-                                                    QString::fromUtf8("Documents (*.xlsx)") );
-    if (!filename.isEmpty()){
-        if (filename.right(5)!=".xlsx"){
-            filename+=".xlsx";
-        }
-        xlsx.saveAs(filename);
-    }
-}
-
-void FormCalcWage::tabelDop()
-{
-    int rabcount=ui->listViewRab->model()->rowCount();
-    if (!rabcount){
-        return;
-    }
-
-    QString title=QString("Приложение к начислению з.пл. за период с %1 по %2").arg(ui->dateEditBeg->date().toString("dd.MM.yy")).arg(ui->dateEditEnd->date().toString("dd.MM.yy"));
-
-    Document xlsx;
-    Worksheet *ws=xlsx.currentWorksheet();
-    XlsxPageSetup pageSetup;
-    pageSetup.fitToPage=true;
-    pageSetup.fitToWidth=1;
-    pageSetup.fitToHeight=0;
-    pageSetup.orientation=XlsxPageSetup::portrait;
-    ws->setPageSetup(pageSetup);
-    QFont defaultFont("Arial", 10);
-    QFont titleFont("Arial", 10);
-    titleFont.setBold(true);
-
-    Format strFormat;
-    strFormat.setBorderStyle(Format::BorderThin);
-    strFormat.setFont(defaultFont);
-    Format numFormat;
-    numFormat.setBorderStyle(Format::BorderThin);
-    numFormat.setFont(defaultFont);
-    Format procFormat;
-    procFormat.setBorderStyle(Format::BorderThin);
-    procFormat.setFont(defaultFont);
-    procFormat.setNumberFormat("0.00%");
-
-    Format titleFormat;
-    titleFormat.setBorderStyle(Format::BorderNone);
-    titleFormat.setFont(titleFont);
-    titleFormat.setTextWarp(true);
-    titleFormat.setHorizontalAlignment(Format::AlignHCenter);
-    titleFormat.setVerticalAlignment(Format::AlignVCenter);
-
-    Format title2Format;
-    title2Format.setBorderStyle(Format::BorderNone);
-    title2Format.setFont(titleFont);
-    title2Format.setTextWarp(true);
-    title2Format.setHorizontalAlignment(Format::AlignRight);
-    title2Format.setVerticalAlignment(Format::AlignVCenter);
-
-    Format headerFormat;
-    headerFormat.setBorderStyle(Format::BorderThin);
-    headerFormat.setFont(titleFont);
-    headerFormat.setTextWarp(true);
-    headerFormat.setHorizontalAlignment(Format::AlignHCenter);
-    headerFormat.setVerticalAlignment(Format::AlignVCenter);
-
-    int m=1;
-    ws->setColumnWidth(1,1,15);
-    ws->setColumnWidth(2,2,15);
-    ws->setColumnWidth(3,3,15);
-    ws->setColumnWidth(4,4,40);
-    ws->setColumnWidth(5,5,13);
-    ws->setColumnWidth(6,6,13);
-    ws->setColumnWidth(7,7,13);
-
-    ws->setRowHeight(m,m+1,80);
-    ws->mergeCells(CellRange(m,1,m,7),title2Format);
-    ws->writeString(m,1,tr("Генеральному директору ООО \"СЗСМ\"\nКукушкину А.В.\nот начальника производства\n\n________________"),title2Format);
-    m++;
-    ws->setRowHeight(m,m+1,40);
-    ws->mergeCells(CellRange(m,1,m,7),titleFormat);
-    ws->writeString(m,1,title,titleFormat);
-    m++;
-    QString year=QString::number(ui->dateEditBeg->date().year());
-    QString month=QDate::longMonthName(ui->dateEditBeg->date().month(),QDate::StandaloneFormat);
-    QString tit2=tr("Премия по итогам работы за ")+month+" "+year+QString(" г.");
-    ws->setRowHeight(m,m+1,40);
-    ws->mergeCells(CellRange(m,1,m,7),titleFormat);
-    ws->writeString(m,1,tit2,titleFormat);
-    m++;
-    ws->writeString(m,1,"Фамилия",headerFormat);
-    ws->writeString(m,2,"Имя",headerFormat);
-    ws->writeString(m,3,"Отчество",headerFormat);
-    ws->writeString(m,4,"Профессия, разряд",headerFormat);
-    ws->writeString(m,5,"Зарплата",headerFormat);
-    ws->writeString(m,6,"Итого",headerFormat);
-    ws->writeString(m,7,"Премия",headerFormat);
-    m++;
-
-    for (int i=0; i<rabcount; i++){
-
-        QString firstName, lastName, middleName, prof;
-        int kvoDay;
-        double zp, total;
-
-        firstName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,1),Qt::EditRole).toString();
-        lastName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,2),Qt::EditRole).toString();
-        middleName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,3),Qt::EditRole).toString();
-        prof=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,6),Qt::EditRole).toString();
-
-        kvoDay=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,7),Qt::EditRole).toInt();
-        zp=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,8),Qt::EditRole).toDouble();
-        total=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,13),Qt::EditRole).toDouble();
-
-
-        if (!kvoDay) continue;
-
-        ws->writeString(m,1,firstName,strFormat);
-        ws->writeString(m,2,lastName,strFormat);
-        ws->writeString(m,3,middleName,strFormat);
-        ws->writeString(m,4,prof,strFormat);
-        numFormat.setNumberFormat("0");
-        QString fmt=QString("# ### ##0.%1").arg((0),2,'d',0,QChar('0'));
-        numFormat.setNumberFormat(fmt);
-        numFormat.setNumberFormatIndex(4);
-
-        ws->writeNumeric(m,5,zp,numFormat);
-        ws->writeNumeric(m,6,total,numFormat);
-        ws->writeBlank(m,7,procFormat);
-        m++;
-
-    }
-    m++;
-    ws->setRowHeight(m,m+1,40);
-    ws->mergeCells(CellRange(m,1,m,7),titleFormat);
-    ws->writeString(m,1,tr("Начальник производства ________________"),titleFormat);
 
     QDir dir(QDir::homePath());
     QString filename = QFileDialog::getSaveFileName(nullptr,QString::fromUtf8("Сохранить файл"),
@@ -551,7 +451,7 @@ void FormCalcWage::tabel()
 
     for (int i=0; i<rabcount; i++){
 
-        int id_rab;
+        /*int id_rab;
         QString firstName, lastName, middleName, prof;
         int kvoDay;
         double zp, dopl, extrtime, premk, premn, total;
@@ -687,7 +587,7 @@ void FormCalcWage::tabel()
 
         m++;
         ws->insertRowBreak(m);
-        m++;
+        m++;*/
     }
 
     QString year=QString::number(ui->dateEditBeg->date().year());
@@ -709,29 +609,5 @@ void FormCalcWage::tabel()
             filename+=".xlsx";
         }
         xlsx.saveAs(filename);
-    }
-}
-
-void FormCalcWage::setDataModel()
-{
-    if (ui->checkBoxVid->isChecked()){
-        ui->tableViewCalc->setModel(modelTableDataVid);
-    } else {
-        ui->tableViewCalc->setModel(modelTableData);
-    }
-    ui->tableViewCalc->resizeToContents();
-}
-
-void FormCalcWage::updTitle()
-{
-    QSqlQuery query;
-    query.prepare("select fnam, sign_norm_el from hoz where id=11");
-    if (query.exec()){
-        while (query.next()){
-            orgName=query.value(0).toString();
-            sign=query.value(1).toString();
-        }
-    } else {
-        QMessageBox::critical(NULL,"Error",query.lastError().text(),QMessageBox::Cancel);
     }
 }
