@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1065</width>
-    <height>556</height>
+    <width>1063</width>
+    <height>554</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -54,6 +54,13 @@
       <widget class="QPushButton" name="pushButtonCalc">
        <property name="text">
         <string>Расчет</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBoxVid">
+       <property name="text">
+        <string>По видам работ</string>
        </property>
       </widget>
      </item>
@@ -136,13 +143,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBoxVid">
-           <property name="text">
-            <string>По видам работ</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <spacer name="horizontalSpacer_2">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -163,7 +163,21 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEditWage">
+          <widget class="QLineEdit" name="lineEditZpl">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>Доп.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEditDopl">
            <property name="readOnly">
             <bool>true</bool>
            </property>
@@ -172,12 +186,26 @@
          <item>
           <widget class="QLabel" name="label_7">
            <property name="text">
-            <string>Св.ур.</string>
+            <string>Вых.</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QLineEdit" name="lineEditExtr">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_9">
+           <property name="text">
+            <string>Ноч.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEditNight">
            <property name="readOnly">
             <bool>true</bool>
            </property>
@@ -191,7 +219,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEditPremQual">
+          <widget class="QLineEdit" name="lineEditPremk">
            <property name="readOnly">
             <bool>true</bool>
            </property>
@@ -205,7 +233,21 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEditPremNorm">
+          <widget class="QLineEdit" name="lineEditPremn">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_10">
+           <property name="text">
+            <string>Пр.мес.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEditPrem">
            <property name="readOnly">
             <bool>true</bool>
            </property>
@@ -214,7 +256,7 @@
          <item>
           <widget class="QLabel" name="label_6">
            <property name="text">
-            <string>К выдаче</string>
+            <string>Итог</string>
            </property>
           </widget>
          </item>

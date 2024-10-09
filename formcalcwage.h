@@ -48,11 +48,22 @@ private:
         double prem;
         double total;
     };
+    struct sumData {
+        double kvo;
+        double zpl;
+        double dopl;
+        double extr;
+        double night;
+        double premk;
+        double premn;
+        double prem;
+        double total;
+    };
+    sumData getSum(int id_rab);
     QMultiHash<int,tabelData> hlong;
-    QMultiHash<int,tabelData> hshort;
-    QHash<int,tabelData> hsum;
     QString orgName, sign;
-
+    QVector<QVector<QVariant>> getLongData(int id_rab);
+    QVector<QVector<QVariant>> getShortData(int id_rab);
 
 private slots:
     void upd();

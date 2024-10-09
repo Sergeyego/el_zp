@@ -20,13 +20,16 @@ FormCalcWage::FormCalcWage(QWidget *parent) :
     modelTableData->setDecimal(2);
     modelTableData->setDecimalForColumn(2,3);
     modelTableData->setDecimalForColumn(3,3);
+    modelTableData->setDecimalForColumn(4,1);
+    modelTableData->setDecimalForColumn(5,1);
+    modelTableData->setDecimalForColumn(6,1);
 
     modelTableDataVid = new TableModel(this);
     modelTableDataVid->setDecimal(2);
     modelTableDataVid->setDecimalForColumn(1,3);
 
     QStringList header;
-    header<<tr("Дата")<<tr("Наименование работ")<<tr("Общ. кол-во")<<tr("Кол-во")<<tr("% кач.")<<tr("% норм.")<<tr("% мес.")<<tr("Тариф")<<tr("З.пл.")<<tr("Допл.")<<tr("Выход.")<<tr("Ночн.")<<tr("Прем.кач")<<tr("Прем.норм.")<<tr("Прем.мес.")<<tr("К выдаче");
+    header<<tr("Дата")<<tr("Наименование работ")<<tr("Общ.к-во")<<tr("Кол-во")<<tr("% кач.")<<tr("% норм.")<<tr("% мес.")<<tr("Тариф")<<tr("З.пл.")<<tr("Допл.")<<tr("Выход.")<<tr("Ночн.")<<tr("Прем.кач")<<tr("Прем.норм.")<<tr("Прем.мес.")<<tr("К выдаче");
     modelTableData->setHeader(header);
 
     QStringList headervid;
@@ -70,6 +73,117 @@ void FormCalcWage::saveSettings()
     settings.setValue("calc_wage_splitter_width",ui->splitter->saveState());
 }
 
+FormCalcWage::sumData FormCalcWage::getSum(int id_rab)
+{
+    sumData sum;
+    sum.zpl=0;
+    sum.dopl=0;
+    sum.extr=0;
+    sum.night=0;
+    sum.premk=0;
+    sum.premn=0;
+    sum.prem=0;
+    sum.total=0;
+    QList<tabelData> list = hlong.values(id_rab);
+    for (tabelData data : list){
+        sum.zpl+=data.zpl;
+        sum.dopl+=data.dopl;
+        sum.extr+=data.extr;
+        sum.night+=data.night;
+        sum.premk+=data.premk;
+        sum.premn+=data.premn;
+        sum.prem+=data.prem;
+        sum.total+=data.total;
+    }
+    return sum;
+}
+
+QVector<QVector<QVariant> > FormCalcWage::getLongData(int id_rab)
+{
+    QVector<QVector<QVariant>> dataLong;
+    QList<tabelData> list = hlong.values(id_rab);
+    QList<tabelData>::const_iterator data = list.end();
+    while (data != list.begin()) {
+        --data;
+        QVector<QVariant> row;
+        row.push_back((*data).date);
+        row.push_back((*data).name);
+        row.push_back((*data).s_kvo);
+        row.push_back((*data).kvo);
+        row.push_back((*data).prk);
+        row.push_back((*data).prn);
+        row.push_back((*data).pr);
+        row.push_back((*data).tarif);
+        row.push_back((*data).zpl);
+        row.push_back((*data).dopl);
+        row.push_back((*data).extr);
+        row.push_back((*data).night);
+        row.push_back((*data).premk);
+        row.push_back((*data).premn);
+        row.push_back((*data).prem);
+        row.push_back((*data).total);
+        dataLong.push_back(row);
+    }
+    return dataLong;
+}
+
+QVector<QVector<QVariant> > FormCalcWage::getShortData(int id_rab)
+{
+    QVector<QVector<QVariant>> dataShort;
+    QList<tabelData> list = hlong.values(id_rab);
+    QMap<QString, sumData> map;
+    QString sep="^_^";
+    for (tabelData data : list){
+        QString key = data.name+sep+QString::number(data.tarif,'f',2);
+        if (map.contains(key)){
+             sumData d = map.value(key);
+             d.kvo+=data.kvo;
+             d.zpl+=data.zpl;
+             d.dopl+=data.dopl;
+             d.extr+=data.extr;
+             d.night+=data.night;
+             d.premk+=data.premk;
+             d.premn+=data.premn;
+             d.prem+=data.prem;
+             d.total+=data.total;
+             map.insert(key,d);
+        } else {
+            sumData d;
+            d.kvo=data.kvo;
+            d.zpl=data.zpl;
+            d.dopl=data.dopl;
+            d.extr=data.extr;
+            d.night=data.night;
+            d.premk=data.premk;
+            d.premn=data.premn;
+            d.prem=data.prem;
+            d.total=data.total;
+            map.insert(key,d);
+        }
+    }
+    QList<QString> job = map.keys();
+    for (QString j : job){
+        QStringList key = j.split(sep);
+        if (key.size()==2){
+            sumData sum = map.value(j);
+            QVector<QVariant> row;
+            row.push_back(key[0]);
+            row.push_back(sum.kvo);
+            row.push_back(key[1].toDouble());
+            row.push_back(sum.zpl);
+            row.push_back(sum.dopl);
+            row.push_back(sum.extr);
+            row.push_back(sum.night);
+            row.push_back(sum.premk);
+            row.push_back(sum.premn);
+            row.push_back(sum.prem);
+            row.push_back(sum.total);
+            dataShort.push_back(row);
+        }
+    }
+    return dataShort;
+}
+
 void FormCalcWage::upd()
 {
     setBlock(true);
@@ -81,6 +195,14 @@ void FormCalcWage::upd()
     modelTableData->clear();
     modelTableDataVid->clear();
     hlong.clear();
+    ui->lineEditZpl->clear();
+    ui->lineEditDopl->clear();
+    ui->lineEditExtr->clear();
+    ui->lineEditNight->clear();
+    ui->lineEditPremk->clear();
+    ui->lineEditPremn->clear();
+    ui->lineEditPrem->clear();
+    ui->lineEditTotal->clear();
     ui->labelItogo->setText("Итого:");
     QString query = QString("select id, dat, fnam, s_kvo, kvo, prk, prn, pr, tarif, zpl, dopl, extr, night, premk, premn, prem, "
                             "(zpl+dopl+extr+night+premk+premn+prem) as total from zrw_calc_wage('%1', '%2')").arg(ui->dateEditBeg->date().toString("yyyy-MM-dd")).arg(ui->dateEditEnd->date().toString("yyyy-MM-dd"));
@@ -91,7 +213,6 @@ void FormCalcWage::upd()
 
 void FormCalcWage::updFinished()
 {
-
     QVector<QVector<QVariant>> data = sqlExecutor->getData();
     QSqlQuery query;
     query.prepare("select rr.id, rr.fam, rr.nam, rr.otc, rr.tabel, rr.snam || ' ' || rp.nam || ' ' || (case when rr2.num<>'-' then '('||rr2.num||' разряд)' else '' end), "
@@ -117,6 +238,16 @@ void FormCalcWage::updFinished()
     }
     bool ok = ui->listViewRab->model()->rowCount();
     setBlock(!ok);
+    sumData sum;
+    sum.zpl=0;
+    sum.dopl=0;
+    sum.extr=0;
+    sum.night=0;
+    sum.premk=0;
+    sum.premn=0;
+    sum.prem=0;
+    sum.total=0;
+
     for (QVector<QVariant> row : data){
         tabelData d;
         d.date=row[1].toDate();
@@ -136,6 +267,37 @@ void FormCalcWage::updFinished()
         d.prem=row[15].toDouble();
         d.total=row[16].toDouble();
         hlong.insert(row[0].toInt(),d);
+
+        sum.zpl+=d.zpl;
+        sum.dopl+=d.dopl;
+        sum.extr+=d.extr;
+        sum.night+=d.night;
+        sum.premk+=d.premk;
+        sum.premn+=d.premn;
+        sum.prem+=d.prem;
+        sum.total+=d.total;
+    }
+
+    ui->labelItogo->setText(QString("З.пл: %1 ₽; Допл.: %2 ₽; Вых.: %3 ₽; Ноч.: %4 ₽; Прем.кач.: %5 ₽; Прем.норм.: %6 ₽; Прем.мес.: %7 ₽; Итого: %8 ₽;")
+                            .arg(QLocale().toString(sum.zpl,'f',2))
+                            .arg(QLocale().toString(sum.dopl,'f',2))
+                            .arg(QLocale().toString(sum.extr,'f',2))
+                            .arg(QLocale().toString(sum.night,'f',2))
+                            .arg(QLocale().toString(sum.premk,'f',2))
+                            .arg(QLocale().toString(sum.premn,'f',2))
+                            .arg(QLocale().toString(sum.prem,'f',2))
+                            .arg(QLocale().toString(sum.total,'f',2)));
+    int currentRow=0;
+    if (current_id_rab>=0){
+        for (int i=0; i<ui->listViewRab->model()->rowCount(); i++){
+            if (ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,0),Qt::EditRole).toInt()==current_id_rab){
+                currentRow=i;
+                break;
+            }
+        }
+    }
+    if (ui->listViewRab->model()->rowCount()){
+        ui->listViewRab->setCurrentIndex(ui->listViewRab->model()->index(currentRow,5));
     }
 }
 
@@ -166,83 +328,20 @@ void FormCalcWage::updTitle()
 
 void FormCalcWage::updTableData(QModelIndex ind)
 {
-
     int id_rb=ui->listViewRab->model()->data(ui->listViewRab->model()->index(ind.row(),0),Qt::EditRole).toInt();
 
-    /*ui->lineEditWage->setText(QLocale().toString(ui->listViewRab->model()->data(ui->listViewRab->model()->index(ind.row(),8),Qt::EditRole).toDouble(),'f',2));
-    ui->lineEditExtr->setText(QLocale().toString(ui->listViewRab->model()->data(ui->listViewRab->model()->index(ind.row(),10),Qt::EditRole).toDouble(),'f',2));
-    ui->lineEditPremQual->setText(QLocale().toString(ui->listViewRab->model()->data(ui->listViewRab->model()->index(ind.row(),11),Qt::EditRole).toDouble(),'f',2));
-    ui->lineEditPremNorm->setText(QLocale().toString(ui->listViewRab->model()->data(ui->listViewRab->model()->index(ind.row(),12),Qt::EditRole).toDouble(),'f',2));
-    ui->lineEditTotal->setText(QLocale().toString(ui->listViewRab->model()->data(ui->listViewRab->model()->index(ind.row(),13),Qt::EditRole).toDouble(),'f',2));
+    sumData sum = getSum(id_rb);
+    ui->lineEditZpl->setText(QLocale().toString(sum.zpl,'f',2));
+    ui->lineEditDopl->setText(QLocale().toString(sum.dopl,'f',2));
+    ui->lineEditExtr->setText(QLocale().toString(sum.extr,'f',2));
+    ui->lineEditNight->setText(QLocale().toString(sum.night,'f',2));
+    ui->lineEditPremk->setText(QLocale().toString(sum.premk,'f',2));
+    ui->lineEditPremn->setText(QLocale().toString(sum.premn,'f',2));
+    ui->lineEditPrem->setText(QLocale().toString(sum.prem,'f',2));
+    ui->lineEditTotal->setText(QLocale().toString(sum.total,'f',2));
 
-    QSqlQuery query;
-    query.prepare("select dat, fnam, s_kvo, kvo, tarif, zpl, extr, "
-                  "bonus, nrm, (zpl+extr+bonus+nrm) as vidach "
-                  "from ztw_wage "
-                  "where id = :id_rab "
-                  "order by dat");
-    query.bindValue(":id_rab",id_rb);
-    if (modelTableData->execQuery(query)){
-        modelTableData->setHeaderData(0,Qt::Horizontal,tr("Дата"));
-        modelTableData->setHeaderData(1,Qt::Horizontal,tr("Наименование работ"));
-        modelTableData->setHeaderData(2,Qt::Horizontal,tr("Общ.к-во"));
-        modelTableData->setHeaderData(3,Qt::Horizontal,tr("К-во"));
-        modelTableData->setHeaderData(4,Qt::Horizontal,tr("Тариф"));
-        modelTableData->setHeaderData(5,Qt::Horizontal,tr("З.пл."));
-        modelTableData->setHeaderData(6,Qt::Horizontal,tr("Св.ур."));
-        modelTableData->setHeaderData(7,Qt::Horizontal,tr("Прем.кач"));
-        modelTableData->setHeaderData(8,Qt::Horizontal,tr("Прем.нор."));
-        modelTableData->setHeaderData(9,Qt::Horizontal,tr("К выдаче"));
-    }*/
-
-    QVector<QVector<QVariant>> dataLong;
-    QList<tabelData> list = hlong.values(id_rb);
-
-    QList<tabelData>::const_iterator data = list.end();
-     while (data != list.begin()) {
-         --data;
-         QVector<QVariant> row;
-         row.push_back((*data).date);
-         row.push_back((*data).name);
-         row.push_back((*data).s_kvo);
-         row.push_back((*data).kvo);
-         row.push_back((*data).prk);
-         row.push_back((*data).prn);
-         row.push_back((*data).pr);
-         row.push_back((*data).tarif);
-         row.push_back((*data).zpl);
-         row.push_back((*data).dopl);
-         row.push_back((*data).extr);
-         row.push_back((*data).night);
-         row.push_back((*data).premk);
-         row.push_back((*data).premn);
-         row.push_back((*data).prem);
-         row.push_back((*data).total);
-         dataLong.push_back(row);
-     }
-
-
-    /*for (tabelData data : list){
-        QVector<QVariant> row;
-        row.push_back(data.date);
-        row.push_back(data.name);
-        row.push_back(data.s_kvo);
-        row.push_back(data.kvo);
-        row.push_back(data.prk);
-        row.push_back(data.prn);
-        row.push_back(data.pr);
-        row.push_back(data.tarif);
-        row.push_back(data.zpl);
-        row.push_back(data.dopl);
-        row.push_back(data.extr);
-        row.push_back(data.night);
-        row.push_back(data.premk);
-        row.push_back(data.premn);
-        row.push_back(data.prem);
-        row.push_back(data.total);
-        dataLong.push_back(row);
-    }*/
-    modelTableData->setModelData(dataLong);
+    modelTableData->setModelData(getLongData(id_rb));
+    modelTableDataVid->setModelData(getShortData(id_rb));
 
     ui->tableViewCalc->resizeToContents();
 }
