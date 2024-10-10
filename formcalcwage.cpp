@@ -134,7 +134,7 @@ QVector<QVector<QVariant> > FormCalcWage::getShortData(int id_rab)
     QMap<QString, sumData> map;
     QString sep="^_^";
     for (tabelData data : list){
-        QString key = data.name+sep+QString::number(data.tarif,'f',2)+sep+data.ed;
+        QString key = data.nam+sep+QString::number(data.tarif,'f',2)+sep+data.ed;
         if (map.contains(key)){
              sumData d = map.value(key);
              d.kvo+=data.kvo;
@@ -206,8 +206,9 @@ void FormCalcWage::upd()
     ui->lineEditTotal->clear();
     ui->labelItogo->setText("Итого:");
     QString query = QString("select c.id, c.dat, c.fnam, c.s_kvo, c.kvo, c.prk, c.prn, c.pr, c.tarif, c.zpl, c.dopl, c.extr, c.night, c.premk, c.premn, c.prem, "
-                            "(c.zpl+c.dopl+c.extr+c.night+c.premk+c.premn+c.prem) as total, e.nam from zrw_calc_wage('%1', '%2') as c "
-                            "inner join wire_rab_ed as e on c.id_ed=e.id").arg(ui->dateEditBeg->date().toString("yyyy-MM-dd")).arg(ui->dateEditEnd->date().toString("yyyy-MM-dd"));
+                            "(c.zpl+c.dopl+c.extr+c.night+c.premk+c.premn+c.prem) as total, e.nam, rl.naim from zrw_calc_wage('%1', '%2') as c "
+                            "inner join wire_rab_ed as e on c.id_ed=e.id "
+                            "inner join rab_liter as rl on rl.id=c.id_lit").arg(ui->dateEditBeg->date().toString("yyyy-MM-dd")).arg(ui->dateEditEnd->date().toString("yyyy-MM-dd"));
     sqlExecutor->setQuery(query);
     sqlExecutor->start();
     updTitle();
@@ -269,6 +270,7 @@ void FormCalcWage::updFinished()
         d.prem=row[15].toDouble();
         d.total=row[16].toDouble();
         d.ed=row[17].toString();
+        d.nam=row[18].toString();
         hlong.insert(row[0].toInt(),d);
 
         sum.zpl+=d.zpl;

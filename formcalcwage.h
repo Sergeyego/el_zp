@@ -34,6 +34,7 @@ private:
         QDate date;
         QString name;
         QString ed;
+        QString nam;
         double s_kvo;
         double kvo;
         double prk;
