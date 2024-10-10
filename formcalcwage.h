@@ -33,6 +33,7 @@ private:
     struct tabelData {
         QDate date;
         QString name;
+        QString ed;
         double s_kvo;
         double kvo;
         double prk;

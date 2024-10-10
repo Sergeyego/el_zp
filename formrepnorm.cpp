@@ -1,7 +1,6 @@
 #include "formrepnorm.h"
 #include "ui_formrepnorm.h"
 
-
 FormRepNorm::FormRepNorm(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::FormRepNorm)
@@ -544,19 +543,9 @@ void FormRepNorm::upd()
     bool by_line=ui->radioButtonLine->isChecked();
     jobmodel->refresh(by_line, zonWidget->getSuf(),ui->radioButtonSm->isChecked(),ui->dateBeg->date(),ui->dateEnd->date());
     ui->jobView->setColumnHidden(0,true);
-    ui->jobView->setColumnWidth(1,70);
-    ui->jobView->setColumnWidth(2,100);
-    ui->jobView->setColumnWidth(3,105);
-    ui->jobView->setColumnWidth(4,130);
-    ui->jobView->setColumnWidth(5,50);
-    ui->jobView->setColumnWidth(6,360);
-    ui->jobView->setColumnWidth(7,60);
-    ui->jobView->setColumnWidth(8,60);
-    ui->jobView->setColumnWidth(9,60);
-    ui->jobView->setColumnWidth(10,60);
-    ui->jobView->setColumnWidth(11,90);
     ui->jobView->setColumnHidden(12,true);
     ui->jobView->setColumnHidden(13,true);
+    ui->jobView->resizeToContents();
 }
 
 JobSqlModel::JobSqlModel(QObject *parent) :

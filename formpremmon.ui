@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>971</width>
-    <height>646</height>
+    <width>969</width>
+    <height>644</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,17 +26,10 @@
      <item>
       <widget class="QRadioButton" name="radioButtonNorm">
        <property name="text">
-        <string>Премии за норму и качество</string>
+        <string>Премии по участкам</string>
        </property>
        <property name="checked">
         <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="radioButtonMon">
-       <property name="text">
-        <string>Ежемесячная премия</string>
        </property>
       </widget>
      </item>
@@ -89,27 +82,6 @@
       </layout>
      </widget>
      <widget class="QWidget" name="page_2">
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QListView" name="listViewProf">
-           <property name="maximumSize">
-            <size>
-             <width>300</width>
-             <height>16777215</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="DbViewer" name="tableViewPrem"/>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="page_3">
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_5">
