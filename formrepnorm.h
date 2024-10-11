@@ -8,6 +8,7 @@
 #include <QSortFilterProxyModel>
 #include "zonwidget.h"
 #include "db/dbtablemodel.h"
+#include "modelzon.h"
 
 namespace Ui {
 class FormRepNorm;
@@ -42,6 +43,7 @@ private:
     Ui::FormRepNorm *ui;
     ZonWidget *zonWidget;
     JobSqlModel *jobmodel;
+    ModelZon *modelZon;
     QSortFilterProxyModel *proxyJobModel;
     QString getProf(int id_rb, QDate date);
     QHash <int, QString> hed;

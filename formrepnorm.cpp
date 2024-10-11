@@ -7,6 +7,11 @@ FormRepNorm::FormRepNorm(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    modelZon = new ModelZon(this);
+    ui->tableViewZon->setModel(modelZon);
+    ui->tableViewZon->setColumnHidden(0,true);
+    ui->tableViewZon->setColumnWidth(1,270);
+
     QSqlQuery query;
     query.prepare("select sign_rep_el from hoz where id=11");
     if (query.exec()){
@@ -558,7 +563,7 @@ JobSqlModel::JobSqlModel(QObject *parent) :
             hsm.insert(query.value(0).toInt(),query.value(1).toString());
         }
     } else {
-        QMessageBox::critical(NULL,tr("Ошибка"),query.lastError().text(),QMessageBox::Cancel);
+        QMessageBox::critical(nullptr,tr("Ошибка"),query.lastError().text(),QMessageBox::Cancel);
     }
 }
 
@@ -604,11 +609,8 @@ void JobSqlModel::refresh(bool emp, QString zonSuf, bool fsm, QDate dbeg, QDate 
            "where j.datf between '"+begdate.toString("yyyy-MM-dd")+"' and '"+enddate.toString("yyyy-MM-dd")+"' and lt.id_ed=1";
     }
     setQuery(qu+zonSuf+order);
-    if (lastError().isValid())
-    {
-        QMessageBox* errmes= new QMessageBox("Error", lastError().text(), QMessageBox::Critical,NULL,QMessageBox::Cancel,NULL);
-        errmes->exec();
-        delete errmes;
+    if (lastError().isValid()){
+        QMessageBox::critical(nullptr,tr("Ошибка"),lastError().text(), QMessageBox::Cancel);
     } else {
         setHeaderData(1, Qt::Horizontal,tr("Дата"));
         setHeaderData(2, Qt::Horizontal,tr("Смена"));

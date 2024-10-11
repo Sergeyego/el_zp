@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core gui sql network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -28,7 +28,9 @@ include(xlsx/qtxlsx.pri)
 SOURCES += \
     formliter.cpp \
     formpremmon.cpp \
+    formrab.cpp \
     formrepnorm.cpp \
+    httpsyncmanager.cpp \
         main.cpp \
         mainwindow.cpp \
     db/dbcombobox.cpp \
@@ -42,6 +44,7 @@ SOURCES += \
     db/executor.cpp \
     db/tablemodel.cpp \
     formcalcwage.cpp \
+    modelzon.cpp \
     progressexecutor.cpp \
     progressreportdialog.cpp \
     rels.cpp \
@@ -52,7 +55,9 @@ SOURCES += \
 HEADERS += \
     formliter.h \
     formpremmon.h \
+    formrab.h \
     formrepnorm.h \
+    httpsyncmanager.h \
         mainwindow.h \
     db/dbcombobox.h \
     db/dbdateedit.h \
@@ -65,6 +70,7 @@ HEADERS += \
     db/executor.h \
     db/tablemodel.h \
     formcalcwage.h \
+    modelzon.h \
     progressexecutor.h \
     progressreportdialog.h \
     rels.h \
@@ -75,6 +81,7 @@ HEADERS += \
 FORMS += \
     formliter.ui \
     formpremmon.ui \
+    formrab.ui \
     formrepnorm.ui \
         mainwindow.ui \
     db/dblogin.ui \

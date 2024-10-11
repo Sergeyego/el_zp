@@ -16,6 +16,7 @@ public:
     DbSqlRelation *relList;
     DbSqlRelation *relEd;
     DbSqlRelation *relConn;
+    DbSqlRelation *relKaminEmp;
 
 protected:
     explicit Rels(QObject *parent = nullptr);

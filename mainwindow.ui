@@ -58,6 +58,7 @@
     <property name="title">
      <string>Справочники</string>
     </property>
+    <addaction name="actionRab"/>
     <addaction name="actionLiter"/>
    </widget>
    <addaction name="menu"/>
@@ -88,6 +89,11 @@
   <action name="actionLiter">
    <property name="text">
     <string>Виды работ</string>
+   </property>
+  </action>
+  <action name="actionRab">
+   <property name="text">
+    <string>Работники</string>
    </property>
   </action>
  </widget>
