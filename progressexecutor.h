@@ -8,7 +8,7 @@ class ProgressExecutor : public Executor
 {
     Q_OBJECT
 public:
-    ProgressExecutor(QObject *parent);
+    ProgressExecutor(QObject *parent = nullptr);
     ~ProgressExecutor();
 private:
     ProgressReportDialog *pprd;

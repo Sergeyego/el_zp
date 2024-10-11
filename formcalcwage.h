@@ -17,7 +17,7 @@ class FormCalcWage : public QWidget
     Q_OBJECT
 
 public:
-    explicit FormCalcWage(QWidget *parent = 0);
+    explicit FormCalcWage(QWidget *parent = nullptr);
     ~FormCalcWage();
 
 private:

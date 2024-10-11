@@ -14,9 +14,11 @@ public:
     DbSqlRelation *relLiter;
     DbSqlRelation *relZon;
     DbSqlRelation *relList;
+    DbSqlRelation *relEd;
+    DbSqlRelation *relConn;
 
 protected:
-    explicit Rels(QObject *parent = 0);
+    explicit Rels(QObject *parent = nullptr);
 
 private:
     static Rels *rels_instance;

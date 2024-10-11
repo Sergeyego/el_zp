@@ -366,6 +366,8 @@ void FormCalcWage::tabelShort()
         return;
     }
 
+    bool en_mon=ui->checkBoxMon->isChecked();
+
     QString title=QString("Начисление заработной платы кратко с %1 по %2").arg(ui->dateEditBeg->date().toString("dd.MM.yy")).arg(ui->dateEditEnd->date().toString("dd.MM.yy"));
 
     Document xlsx;
@@ -413,10 +415,13 @@ void FormCalcWage::tabelShort()
     ws->setColumnWidth(10,10,12);
     ws->setColumnWidth(11,11,12);
     ws->setColumnWidth(12,12,12);
-    ws->setColumnWidth(13,13,12);
-
+    if (en_mon){
+        ws->setColumnWidth(13,13,12);
+        ws->mergeCells(CellRange(m,1,m,13),titleFormat);
+    } else {
+        ws->mergeCells(CellRange(m,1,m,12),titleFormat);
+    }
     ws->setRowHeight(m,m+1,40);
-    ws->mergeCells(CellRange(m,1,m,13),titleFormat);
     ws->writeString(m,1,title,titleFormat);
     m++;
     ws->writeString(m,1,"Фамилия",headerFormat);
@@ -430,8 +435,12 @@ void FormCalcWage::tabelShort()
     ws->writeString(m,9,"Ночная смена",headerFormat);
     ws->writeString(m,10,"Премия за кач.",headerFormat);
     ws->writeString(m,11,"Премия за нор.",headerFormat);
-    ws->writeString(m,12,"Премия месяч.",headerFormat);
-    ws->writeString(m,13,"Начислено",headerFormat);
+    if (en_mon){
+        ws->writeString(m,12,"Премия месяч.",headerFormat);
+        ws->writeString(m,13,"Начислено",headerFormat);
+    } else {
+        ws->writeString(m,12,"Начислено",headerFormat);
+    }
     m++;
 
     for (int i=0; i<rabcount; i++){
@@ -464,8 +473,12 @@ void FormCalcWage::tabelShort()
         ws->writeNumeric(m,9,sum.night,numFormat);
         ws->writeNumeric(m,10,sum.premk,numFormat);
         ws->writeNumeric(m,11,sum.premn,numFormat);
-        ws->writeNumeric(m,12,sum.prem,numFormat);
-        ws->writeNumeric(m,13,sum.total,numFormat);
+        if (en_mon) {
+            ws->writeNumeric(m,12,sum.prem,numFormat);
+            ws->writeNumeric(m,13,sum.total,numFormat);
+        } else {
+            ws->writeNumeric(m,12,sum.total-sum.prem,numFormat);
+        }
         m++;
 
     }
@@ -477,7 +490,9 @@ void FormCalcWage::tabelShort()
     ws->write(m,10,QString("=SUM(J3:J%1)").arg(m-1),numFormat);
     ws->write(m,11,QString("=SUM(K3:K%1)").arg(m-1),numFormat);
     ws->write(m,12,QString("=SUM(L3:L%1)").arg(m-1),numFormat);
-    ws->write(m,13,QString("=SUM(M3:M%1)").arg(m-1),numFormat);
+    if (en_mon) {
+        ws->write(m,13,QString("=SUM(M3:M%1)").arg(m-1),numFormat);
+    }
 
     QDir dir(QDir::homePath());
     QString filename = QFileDialog::getSaveFileName(nullptr,QString::fromUtf8("Сохранить файл"),

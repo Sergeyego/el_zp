@@ -17,7 +17,7 @@ class JobSqlModel : public QSqlQueryModel
 {
     Q_OBJECT
 public:
-    explicit JobSqlModel(QObject *parent = 0);
+    explicit JobSqlModel(QObject *parent = nullptr);
     QVariant data(const QModelIndex &index,int role = Qt::DisplayRole) const;
     void refresh(bool emp, QString zonSuf, bool fsm, QDate dbeg, QDate dend);
     QHash <int, QString> hsm;

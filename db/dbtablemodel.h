@@ -25,7 +25,7 @@ class DbSqlLikeModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 public:
-    DbSqlLikeModel(DbSqlRelation *r, QObject *parent=nullptr);
+    DbSqlLikeModel(DbSqlRelation *r, QObject *parent = nullptr);
     void setAsync(bool b);
     void setLimit(int l);
     TableModel *originalModel();

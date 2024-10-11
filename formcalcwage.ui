@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1063</width>
-    <height>554</height>
+    <width>1061</width>
+    <height>552</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -78,16 +78,9 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="labelItogo">
-       <property name="font">
-        <font>
-         <pointsize>8</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
+      <widget class="QCheckBox" name="checkBoxMon">
        <property name="text">
-        <string>Итого:</string>
+        <string>Включить мес. премию</string>
        </property>
       </widget>
      </item>
@@ -127,6 +120,20 @@
      <widget class="QListView" name="listViewRab"/>
      <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QLabel" name="labelItogo">
+         <property name="font">
+          <font>
+           <pointsize>8</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Итого:</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="TableView" name="tableViewCalc"/>
        </item>

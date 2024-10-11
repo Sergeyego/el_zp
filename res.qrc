@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>images/simb_labl.png</file>
         <file>images/icon.ico</file>
+        <file>images/key.png</file>
     </qresource>
 </RCC>

@@ -13,7 +13,7 @@ class ProgressReportDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit ProgressReportDialog(QWidget *parent = 0);
+    explicit ProgressReportDialog(QWidget *parent = nullptr);
     ~ProgressReportDialog();
     void closeEvent(QCloseEvent *pe);
     

@@ -20,7 +20,7 @@ class TableView : public QTableView
         Q_OBJECT
 public:
 
-    TableView(QWidget *parent=0);
+    TableView(QWidget *parent = nullptr);
     void save(QString fnam, int dec=-1, bool fitToHeight=false, Qt::ScreenOrientation orientation=Qt::PortraitOrientation);
 
 protected:

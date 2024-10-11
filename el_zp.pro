@@ -26,6 +26,7 @@ include(xlsx/qtxlsx.pri)
 
 
 SOURCES += \
+    formliter.cpp \
     formpremmon.cpp \
     formrepnorm.cpp \
         main.cpp \
@@ -49,6 +50,7 @@ SOURCES += \
     zonwidget.cpp
 
 HEADERS += \
+    formliter.h \
     formpremmon.h \
     formrepnorm.h \
         mainwindow.h \
@@ -71,6 +73,7 @@ HEADERS += \
     zonwidget.h
 
 FORMS += \
+    formliter.ui \
     formpremmon.ui \
     formrepnorm.ui \
         mainwindow.ui \
