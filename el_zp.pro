@@ -29,6 +29,7 @@ SOURCES += \
     formliter.cpp \
     formpremmon.cpp \
     formrab.cpp \
+    formrepmon.cpp \
     formrepnorm.cpp \
     httpsyncmanager.cpp \
         main.cpp \
@@ -49,13 +50,13 @@ SOURCES += \
     progressreportdialog.cpp \
     rels.cpp \
     tableview.cpp \
-    modelro.cpp \
-    zonwidget.cpp
+    modelro.cpp
 
 HEADERS += \
     formliter.h \
     formpremmon.h \
     formrab.h \
+    formrepmon.h \
     formrepnorm.h \
     httpsyncmanager.h \
         mainwindow.h \
@@ -75,13 +76,13 @@ HEADERS += \
     progressreportdialog.h \
     rels.h \
     tableview.h \
-    modelro.h \
-    zonwidget.h
+    modelro.h
 
 FORMS += \
     formliter.ui \
     formpremmon.ui \
     formrab.ui \
+    formrepmon.ui \
     formrepnorm.ui \
         mainwindow.ui \
     db/dblogin.ui \

@@ -6,7 +6,6 @@
 #include <QtSql>
 #include <QMessageBox>
 #include <QSortFilterProxyModel>
-#include "zonwidget.h"
 #include "db/dbtablemodel.h"
 #include "modelzon.h"
 
@@ -41,7 +40,6 @@ public:
     
 private:
     Ui::FormRepNorm *ui;
-    ZonWidget *zonWidget;
     JobSqlModel *jobmodel;
     ModelZon *modelZon;
     QSortFilterProxyModel *proxyJobModel;

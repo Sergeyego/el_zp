@@ -27,21 +27,46 @@ bool ModelZon::setData(const QModelIndex &index, const QVariant &value, int role
 {
     if (role==Qt::CheckStateRole && index.column()==1){
         int id = this->data(this->index(index.row(),0),Qt::EditRole).toInt();
-        if (value.toBool() && !sel.contains(id)){
-            sel.push_back(id);
+        if (value.toBool()){
+            sel.insert(id);
         } else {
-            sel.removeAll(id);
+            sel.remove(id);
         }
+        emit supd();
         return true;
     }
     return ModelRo::setData(index,value,role);
 }
 
-void ModelZon::setList(QList<int> list)
+void ModelZon::setSel(QSet<int> set)
 {
     beginResetModel();
-    sel=list;
+    sel=set;
     endResetModel();
+    emit supd();
+}
+
+QString ModelZon::getStr()
+{
+    QString str="(0";
+    for (int val : sel){
+        if (!str.isEmpty()){
+            str+=", ";
+        }
+        str+=QString::number(val);
+    }
+    str+=")";
+    return str;
+}
+
+bool ModelZon::pres()
+{
+    return sel.contains(2);
+}
+
+bool ModelZon::pack()
+{
+    return sel.contains(6);
 }
 
 void ModelZon::refresh()

@@ -8,6 +8,9 @@ FormRepNorm::FormRepNorm(QWidget *parent) :
     ui->setupUi(this);
 
     modelZon = new ModelZon(this);
+    QSet<int> set;
+    set<<2<<23;
+    modelZon->setSel(set);
     ui->tableViewZon->setModel(modelZon);
     ui->tableViewZon->setColumnHidden(0,true);
     ui->tableViewZon->setColumnWidth(1,270);
@@ -36,9 +39,6 @@ FormRepNorm::FormRepNorm(QWidget *parent) :
 
     jobmodel = new JobSqlModel(this);
 
-    zonWidget = new ZonWidget(this);
-    ui->horizontalLayoutZon->addWidget(zonWidget);
-
 
     proxyJobModel = new QSortFilterProxyModel(this);
     proxyJobModel->setSourceModel(jobmodel);
@@ -50,7 +50,7 @@ FormRepNorm::FormRepNorm(QWidget *parent) :
     connect(ui->radioButtonLine,SIGNAL(clicked(bool)),this,SLOT(upd()));
     connect(ui->radioButtonSm,SIGNAL(clicked(bool)),this,SLOT(upd()));
     connect(ui->cmdOtchPer,SIGNAL(clicked()),this,SLOT(goRep()));
-    connect(zonWidget,SIGNAL(supd()),this,SLOT(upd()));
+    connect(modelZon,SIGNAL(supd()),this,SLOT(upd()));
     connect(ui->jobView->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(updTotal(QModelIndex)));
 }
 
@@ -92,7 +92,8 @@ bool FormRepNorm::getTotalVip(double &vip, int &d, double &kvo, const int id_rb)
                "inner join rab_nams as n on j.lid=n.lid "
                "inner join rab_liter as lt on n.id=lt.id "
                "where lt.id_ed=1 and j.datf between :d1 and :d2 and j.id_rb = :id_rb ";
-    query.prepare(qu+zonWidget->getSuf());
+    qu+=" and lt.zon in "+modelZon->getStr();
+    query.prepare(qu);
     query.bindValue(":d1",ui->dateBeg->date());
     query.bindValue(":d2",ui->dateEnd->date());
     query.bindValue(":id_rb",id_rb);
@@ -502,9 +503,9 @@ void FormRepNorm::saveXlsPer()
         ws->setFooterData(footerData);
 
         QString name;
-        if (zonWidget->pres() && !zonWidget->pack()){
+        if (modelZon->pres() && !modelZon->pack()){
             name=QString("прессовщики ")+fperiod;
-        } else if (zonWidget->pack() && !zonWidget->pres()){
+        } else if (modelZon->pack() && !modelZon->pres()){
             name=QString("упаковщики ")+fperiod;
         } else {
             name=QString("Отчет работы структурного подразделения цех по производству сварочных электродов ")+period;
@@ -545,8 +546,9 @@ void FormRepNorm::goRep()
 
 void FormRepNorm::upd()
 {
+    modelZon->refresh();
     bool by_line=ui->radioButtonLine->isChecked();
-    jobmodel->refresh(by_line, zonWidget->getSuf(),ui->radioButtonSm->isChecked(),ui->dateBeg->date(),ui->dateEnd->date());
+    jobmodel->refresh(by_line,modelZon->getStr(),ui->radioButtonSm->isChecked(),ui->dateBeg->date(),ui->dateEnd->date());
     ui->jobView->setColumnHidden(0,true);
     ui->jobView->setColumnHidden(12,true);
     ui->jobView->setColumnHidden(13,true);
@@ -608,7 +610,8 @@ void JobSqlModel::refresh(bool emp, QString zonSuf, bool fsm, QDate dbeg, QDate 
            "inner join rab_liter as lt on n.id=lt.id "
            "where j.datf between '"+begdate.toString("yyyy-MM-dd")+"' and '"+enddate.toString("yyyy-MM-dd")+"' and lt.id_ed=1";
     }
-    setQuery(qu+zonSuf+order);
+    qu+=" and lt.zon in "+zonSuf;
+    setQuery(qu+order);
     if (lastError().isValid()){
         QMessageBox::critical(nullptr,tr("Ошибка"),lastError().text(), QMessageBox::Cancel);
     } else {

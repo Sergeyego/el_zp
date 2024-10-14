@@ -9,6 +9,7 @@
 #include "formrepnorm.h"
 #include "formliter.h"
 #include "formrab.h"
+#include "formrepmon.h"
 
 namespace Ui {
 class MainWindow;
@@ -39,6 +40,7 @@ private slots:
     void newFormRepNorm();
     void newFormLiter();
     void newFormRab();
+    void newFormRepMon();
 };
 
 #endif // MAINWINDOW_H
