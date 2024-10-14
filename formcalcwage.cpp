@@ -73,7 +73,19 @@ void FormCalcWage::saveSettings()
     settings.setValue("calc_wage_splitter_width",ui->splitter->saveState());
 }
 
-FormCalcWage::sumData FormCalcWage::getSum(int id_rab)
+int FormCalcWage::getKvoDay(int id_rab, QDate beg, QDate end)
+{
+    QSet<QDate> ds;
+    QList<tabelData> list = hlong.values(id_rab);
+    for (tabelData data : list){
+        if (data.date>=beg && data.date<=end){
+            ds.insert(data.date);
+        }
+    }
+    return ds.count();
+}
+
+FormCalcWage::sumData FormCalcWage::getSum(int id_rab, QDate beg, QDate end)
 {
     sumData sum;
     sum.zpl=0;
@@ -86,79 +98,85 @@ FormCalcWage::sumData FormCalcWage::getSum(int id_rab)
     sum.total=0;
     QList<tabelData> list = hlong.values(id_rab);
     for (tabelData data : list){
-        sum.zpl+=data.zpl;
-        sum.dopl+=data.dopl;
-        sum.extr+=data.extr;
-        sum.night+=data.night;
-        sum.premk+=data.premk;
-        sum.premn+=data.premn;
-        sum.prem+=data.prem;
-        sum.total+=data.total;
+        if (data.date>=beg && data.date<=end){
+            sum.zpl+=data.zpl;
+            sum.dopl+=data.dopl;
+            sum.extr+=data.extr;
+            sum.night+=data.night;
+            sum.premk+=data.premk;
+            sum.premn+=data.premn;
+            sum.prem+=data.prem;
+            sum.total+=data.total;
+        }
     }
     return sum;
 }
 
-QVector<QVector<QVariant> > FormCalcWage::getLongData(int id_rab)
+QVector<QVector<QVariant> > FormCalcWage::getLongData(int id_rab, QDate beg, QDate end)
 {
     QVector<QVector<QVariant>> dataLong;
     QList<tabelData> list = hlong.values(id_rab);
     QList<tabelData>::const_iterator data = list.end();
     while (data != list.begin()) {
         --data;
-        QVector<QVariant> row;
-        row.push_back((*data).date);
-        row.push_back((*data).name);
-        row.push_back((*data).s_kvo);
-        row.push_back((*data).kvo);
-        row.push_back((*data).prk);
-        row.push_back((*data).prn);
-        row.push_back((*data).pr);
-        row.push_back((*data).tarif);
-        row.push_back((*data).zpl);
-        row.push_back((*data).dopl);
-        row.push_back((*data).extr);
-        row.push_back((*data).night);
-        row.push_back((*data).premk);
-        row.push_back((*data).premn);
-        row.push_back((*data).prem);
-        row.push_back((*data).total);
-        dataLong.push_back(row);
+        if((*data).date>=beg && (*data).date<=end){
+            QVector<QVariant> row;
+            row.push_back((*data).date);
+            row.push_back((*data).name);
+            row.push_back((*data).s_kvo);
+            row.push_back((*data).kvo);
+            row.push_back((*data).prk);
+            row.push_back((*data).prn);
+            row.push_back((*data).pr);
+            row.push_back((*data).tarif);
+            row.push_back((*data).zpl);
+            row.push_back((*data).dopl);
+            row.push_back((*data).extr);
+            row.push_back((*data).night);
+            row.push_back((*data).premk);
+            row.push_back((*data).premn);
+            row.push_back((*data).prem);
+            row.push_back((*data).total);
+            dataLong.push_back(row);
+        }
     }
     return dataLong;
 }
 
-QVector<QVector<QVariant> > FormCalcWage::getShortData(int id_rab)
+QVector<QVector<QVariant> > FormCalcWage::getShortData(int id_rab, QDate beg, QDate end)
 {
     QVector<QVector<QVariant>> dataShort;
     QList<tabelData> list = hlong.values(id_rab);
     QMap<QString, sumData> map;
     QString sep="^_^";
     for (tabelData data : list){
-        QString key = data.nam+sep+QString::number(data.tarif,'f',2)+sep+data.ed;
-        if (map.contains(key)){
-             sumData d = map.value(key);
-             d.kvo+=data.kvo;
-             d.zpl+=data.zpl;
-             d.dopl+=data.dopl;
-             d.extr+=data.extr;
-             d.night+=data.night;
-             d.premk+=data.premk;
-             d.premn+=data.premn;
-             d.prem+=data.prem;
-             d.total+=data.total;
-             map.insert(key,d);
-        } else {
-            sumData d;
-            d.kvo=data.kvo;
-            d.zpl=data.zpl;
-            d.dopl=data.dopl;
-            d.extr=data.extr;
-            d.night=data.night;
-            d.premk=data.premk;
-            d.premn=data.premn;
-            d.prem=data.prem;
-            d.total=data.total;
-            map.insert(key,d);
+        if (data.date>=beg && data.date<=end){
+            QString key = data.nam+sep+QString::number(data.tarif,'f',2)+sep+data.ed;
+            if (map.contains(key)){
+                sumData d = map.value(key);
+                d.kvo+=data.kvo;
+                d.zpl+=data.zpl;
+                d.dopl+=data.dopl;
+                d.extr+=data.extr;
+                d.night+=data.night;
+                d.premk+=data.premk;
+                d.premn+=data.premn;
+                d.prem+=data.prem;
+                d.total+=data.total;
+                map.insert(key,d);
+            } else {
+                sumData d;
+                d.kvo=data.kvo;
+                d.zpl=data.zpl;
+                d.dopl=data.dopl;
+                d.extr=data.extr;
+                d.night=data.night;
+                d.premk=data.premk;
+                d.premn=data.premn;
+                d.prem=data.prem;
+                d.total=data.total;
+                map.insert(key,d);
+            }
         }
     }
     QList<QString> job = map.keys();
@@ -218,24 +236,19 @@ void FormCalcWage::updFinished()
 {
     QVector<QVector<QVariant>> data = sqlExecutor->getData();
     QSqlQuery query;
-    query.prepare("select rr.id, rr.fam, rr.nam, rr.otc, rr.tabel, rr.snam || ' ' || rp.nam || ' ' || (case when rr2.num<>'-' then '('||rr2.num||' разряд)' else '' end), "
-                  "rp.nam || ' ' || (case when rr2.num<>'-' then '('||rr2.num||' разряд)' else '' end), zwc.sdat "
+    query.prepare("select rr.id, rr.fam, rr.nam, rr.otc, ge.tabel, coalesce(rr.snam ||' '||kj.nam, rr.snam), kj.nam, "
+                  "zwc.sdat, coalesce(ge.dat,:d1), coalesce(ge.datend - interval '1 day',:d2) "
                   "from rab_rab rr "
                   "inner join ( "
                   "    select rs.id_rab as id_rab, count(distinct rj.dat) as sdat from rab_share rs "
                   "    inner join rab_job rj on rj.id = rs.id_job "
                   "    where rj.dat between :d1 and :d2 "
                   "    group by rs.id_rab ) as zwc on zwc.id_rab = rr.id "
-                  "left join (select rq.id_rab as id_rab, max(rq.dat) as mdat from rab_qual rq "
-                  "    where rq.dat <= :d3 and rq.id_prof <> 0 "
-                  "    group by rq.id_rab ) as rh on rh.id_rab=rr.id "
-                  "left join rab_qual rq2 on rq2.id_rab = rh.id_rab and rq2.dat = rh.mdat "
-                  "left join rab_prof rp on rp.id = rq2.id_prof "
-                  "left join rab_razr rr2 on rr2.id = rq2.id_razr "
-                  "order by rr.fam, rr.nam, rr.otc");
+                  "left join kamin_get_empl(:d1,:d2) as ge on ge.id_empl = rr.id_kamin "
+                  "left join kamin_job kj on kj.id = ge.id_job "
+                  "order by rr.fam, rr.nam, rr.otc, ge.dat");
     query.bindValue(":d1",ui->dateEditBeg->date());
     query.bindValue(":d2",ui->dateEditEnd->date());
-    query.bindValue(":d3",ui->dateEditEnd->date());
     if (modelRab->execQuery(query)){
         ui->listViewRab->setModelColumn(5);
     }
@@ -334,8 +347,10 @@ void FormCalcWage::updTitle()
 void FormCalcWage::updTableData(QModelIndex ind)
 {
     int id_rb=ui->listViewRab->model()->data(ui->listViewRab->model()->index(ind.row(),0),Qt::EditRole).toInt();
+    QDate beg=ui->listViewRab->model()->data(ui->listViewRab->model()->index(ind.row(),8),Qt::EditRole).toDate();
+    QDate end=ui->listViewRab->model()->data(ui->listViewRab->model()->index(ind.row(),9),Qt::EditRole).toDate();
 
-    sumData sum = getSum(id_rb);
+    sumData sum = getSum(id_rb,beg,end);
     ui->lineEditZpl->setText(QLocale().toString(sum.zpl,'f',2));
     ui->lineEditDopl->setText(QLocale().toString(sum.dopl,'f',2));
     ui->lineEditExtr->setText(QLocale().toString(sum.extr,'f',2));
@@ -345,8 +360,8 @@ void FormCalcWage::updTableData(QModelIndex ind)
     ui->lineEditPrem->setText(QLocale().toString(sum.prem,'f',2));
     ui->lineEditTotal->setText(QLocale().toString(sum.total,'f',2));
 
-    modelTableData->setModelData(getLongData(id_rb));
-    modelTableDataVid->setModelData(getShortData(id_rb));
+    modelTableData->setModelData(getLongData(id_rb,beg,end));
+    modelTableDataVid->setModelData(getShortData(id_rb,beg,end));
 
     ui->tableViewCalc->resizeToContents();
 }
@@ -446,16 +461,17 @@ void FormCalcWage::tabelShort()
     for (int i=0; i<rabcount; i++){
 
         QString firstName, lastName, middleName, prof;
-        int kvoDay;
 
         int id_rab=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,0),Qt::EditRole).toInt();
         firstName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,1),Qt::EditRole).toString();
         lastName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,2),Qt::EditRole).toString();
         middleName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,3),Qt::EditRole).toString();
         prof=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,6),Qt::EditRole).toString();
-        kvoDay=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,7),Qt::EditRole).toInt();
+        QDate beg=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,8),Qt::EditRole).toDate();
+        QDate end=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,9),Qt::EditRole).toDate();
+        int kvoDay=getKvoDay(id_rab,beg,end);
 
-        sumData sum=getSum(id_rab);
+        sumData sum=getSum(id_rab,beg,end);
 
         if (!kvoDay) continue;
 
@@ -585,9 +601,11 @@ void FormCalcWage::tabel()
         lastName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,2)).toString();
         middleName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,3)).toString();
         prof=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,6)).toString();
+        QDate beg=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,8),Qt::EditRole).toDate();
+        QDate end=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,9),Qt::EditRole).toDate();
 
-        QVector<QVector<QVariant>> data = getShortData(id_rab);
-        sumData sum = getSum(id_rab);
+        QVector<QVector<QVariant>> data = getShortData(id_rab,beg,end);
+        sumData sum = getSum(id_rab,beg,end);
 
         ws->mergeCells(CellRange(m,1,m+1,1),headerFormat);
         ws->writeString(m,1,QString("№"),headerFormat);
@@ -638,7 +656,7 @@ void FormCalcWage::tabel()
 
         m+=2;
 
-        kvoDay=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,7),Qt::EditRole).toInt();
+        kvoDay=getKvoDay(id_rab,beg,end);
 
         if (!kvoDay) continue;
 

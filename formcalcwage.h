@@ -61,11 +61,12 @@ private:
         double prem;
         double total;
     };
-    sumData getSum(int id_rab);
+    int getKvoDay(int id_rab, QDate beg, QDate end);
+    sumData getSum(int id_rab, QDate beg, QDate end);
     QMultiHash<int,tabelData> hlong;
     QString orgName, sign;
-    QVector<QVector<QVariant>> getLongData(int id_rab);
-    QVector<QVector<QVariant>> getShortData(int id_rab);
+    QVector<QVector<QVariant>> getLongData(int id_rab, QDate beg, QDate end);
+    QVector<QVector<QVariant>> getShortData(int id_rab, QDate beg, QDate end);
 
 private slots:
     void upd();
