@@ -7,6 +7,7 @@
 #include <QMultiHash>
 #include "db/tablemodel.h"
 #include "progressexecutor.h"
+#include "formrepmon.h"
 
 namespace Ui {
 class FormCalcWage;
@@ -51,6 +52,7 @@ private:
         double total;
     };
     struct sumData {
+        int kvoDay;
         double kvo;
         double zpl;
         double dopl;
@@ -61,7 +63,6 @@ private:
         double prem;
         double total;
     };
-    int getKvoDay(int id_rab, QDate beg, QDate end);
     sumData getSum(int id_rab, QDate beg, QDate end);
     QMultiHash<int,tabelData> hlong;
     QString orgName, sign;
@@ -72,6 +73,7 @@ private slots:
     void upd();
     void updFinished();
     void updTableData(QModelIndex ind);
+    void repMon();
     void saveTabelXlsx();
     void tabelShort();
     void tabel();

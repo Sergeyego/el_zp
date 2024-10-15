@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1016</width>
-    <height>692</height>
+    <width>1014</width>
+    <height>690</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,7 +32,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1016</width>
+     <width>1014</width>
      <height>25</height>
     </rect>
    </property>
@@ -53,7 +53,6 @@
      <string>Отчеты</string>
     </property>
     <addaction name="actionRepNorm"/>
-    <addaction name="actionRepMon"/>
    </widget>
    <widget class="QMenu" name="menu_4">
     <property name="title">
@@ -77,11 +76,6 @@
     <string>Начисление премий</string>
    </property>
   </action>
-  <action name="actionPremNorm">
-   <property name="text">
-    <string>Премия за норму и качество</string>
-   </property>
-  </action>
   <action name="actionRepNorm">
    <property name="text">
     <string>Выполнение норм</string>
@@ -95,11 +89,6 @@
   <action name="actionRab">
    <property name="text">
     <string>Работники</string>
-   </property>
-  </action>
-  <action name="actionRepMon">
-   <property name="text">
-    <string>Отчет по месячной премии</string>
    </property>
   </action>
  </widget>

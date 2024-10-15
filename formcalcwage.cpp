@@ -44,6 +44,7 @@ FormCalcWage::FormCalcWage(QWidget *parent) :
     connect(ui->pushButtonSave,SIGNAL(clicked(bool)),this,SLOT(saveTabelXlsx()));
     connect(ui->pushButtonTabelShort,SIGNAL(clicked(bool)),this,SLOT(tabelShort()));
     connect(ui->pushButtonTabel,SIGNAL(clicked(bool)),this,SLOT(tabel()));
+    connect(ui->pushButtonMon,SIGNAL(clicked(bool)),this,SLOT(repMon()));
     connect(ui->checkBoxVid,SIGNAL(clicked(bool)),this,SLOT(setDataModel()));
     connect(sqlExecutor,SIGNAL(finished()),this,SLOT(updFinished()));
 }
@@ -59,6 +60,7 @@ void FormCalcWage::setBlock(bool b)
     ui->pushButtonSave->setDisabled(b);
     ui->pushButtonTabel->setDisabled(b);
     ui->pushButtonTabelShort->setDisabled(b);
+    ui->pushButtonMon->setDisabled(b);
 }
 
 void FormCalcWage::loadSettings()
@@ -73,18 +75,6 @@ void FormCalcWage::saveSettings()
     settings.setValue("calc_wage_splitter_width",ui->splitter->saveState());
 }
 
-int FormCalcWage::getKvoDay(int id_rab, QDate beg, QDate end)
-{
-    QSet<QDate> ds;
-    QList<tabelData> list = hlong.values(id_rab);
-    for (tabelData data : list){
-        if (data.date>=beg && data.date<=end){
-            ds.insert(data.date);
-        }
-    }
-    return ds.count();
-}
-
 FormCalcWage::sumData FormCalcWage::getSum(int id_rab, QDate beg, QDate end)
 {
     sumData sum;
@@ -96,6 +86,7 @@ FormCalcWage::sumData FormCalcWage::getSum(int id_rab, QDate beg, QDate end)
     sum.premn=0;
     sum.prem=0;
     sum.total=0;
+    QSet<QDate> ds;
     QList<tabelData> list = hlong.values(id_rab);
     for (tabelData data : list){
         if (data.date>=beg && data.date<=end){
@@ -107,8 +98,10 @@ FormCalcWage::sumData FormCalcWage::getSum(int id_rab, QDate beg, QDate end)
             sum.premn+=data.premn;
             sum.prem+=data.prem;
             sum.total+=data.total;
+            ds.insert(data.date);
         }
     }
+    sum.kvoDay=ds.count();
     return sum;
 }
 
@@ -237,7 +230,7 @@ void FormCalcWage::updFinished()
     QVector<QVector<QVariant>> data = sqlExecutor->getData();
     QSqlQuery query;
     query.prepare("select rr.id, rr.fam, rr.nam, rr.otc, ge.tabel, coalesce(rr.snam ||' '||kj.nam, rr.snam), kj.nam, "
-                  "zwc.sdat, coalesce(ge.dat,:d1), coalesce(ge.datend - interval '1 day',:d2) "
+                  "rr.snam, coalesce(ge.dat,:d1), coalesce(ge.datend - interval '1 day',:d2) "
                   "from rab_rab rr "
                   "inner join ( "
                   "    select rs.id_rab as id_rab, count(distinct rj.dat) as sdat from rab_share rs "
@@ -351,6 +344,7 @@ void FormCalcWage::updTableData(QModelIndex ind)
     QDate end=ui->listViewRab->model()->data(ui->listViewRab->model()->index(ind.row(),9),Qt::EditRole).toDate();
 
     sumData sum = getSum(id_rb,beg,end);
+    double prem = sum.zpl>0 ? sum.prem*100/sum.zpl : 0.0;
     ui->lineEditZpl->setText(QLocale().toString(sum.zpl,'f',2));
     ui->lineEditDopl->setText(QLocale().toString(sum.dopl,'f',2));
     ui->lineEditExtr->setText(QLocale().toString(sum.extr,'f',2));
@@ -358,12 +352,36 @@ void FormCalcWage::updTableData(QModelIndex ind)
     ui->lineEditPremk->setText(QLocale().toString(sum.premk,'f',2));
     ui->lineEditPremn->setText(QLocale().toString(sum.premn,'f',2));
     ui->lineEditPrem->setText(QLocale().toString(sum.prem,'f',2));
-    ui->lineEditTotal->setText(QLocale().toString(sum.total,'f',2));
+    ui->lineEditTotal->setText(QLocale().toString(sum.total,'f',2));    
+    ui->labelPrem->setText(tr("Прем.(")+QLocale().toString(prem,'f',1)+tr("%)"));
 
     modelTableData->setModelData(getLongData(id_rb,beg,end));
     modelTableDataVid->setModelData(getShortData(id_rb,beg,end));
 
     ui->tableViewCalc->resizeToContents();
+}
+
+void FormCalcWage::repMon()
+{
+    QVector<QVector<QVariant>> data;
+    for (int i=0; i<ui->listViewRab->model()->rowCount();i++){
+        QVector<QVariant> row;
+        int id_rab=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,0),Qt::EditRole).toInt();
+        row.push_back(id_rab);
+        row.push_back(ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,7),Qt::EditRole));
+        row.push_back(ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,6),Qt::EditRole));
+        QDate beg=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,8),Qt::EditRole).toDate();
+        QDate end=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,9),Qt::EditRole).toDate();
+        sumData sum=getSum(id_rab,beg,end);
+        row.push_back(sum.zpl>0 ? sum.prem*100/sum.zpl : 0.0);
+        data.push_back(row);
+    }
+    QString tit=QString("Премия за месяц с %1 по %2").arg(ui->dateEditBeg->date().toString("dd.MM.yy")).arg(ui->dateEditEnd->date().toString("dd.MM.yy"));
+    FormRepMon *rep = new FormRepMon();
+    rep->setAttribute(Qt::WA_DeleteOnClose);
+    rep->setModelMada(data);
+    rep->setTitle(tit);
+    rep->show();
 }
 
 void FormCalcWage::saveTabelXlsx()
@@ -469,18 +487,14 @@ void FormCalcWage::tabelShort()
         prof=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,6),Qt::EditRole).toString();
         QDate beg=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,8),Qt::EditRole).toDate();
         QDate end=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,9),Qt::EditRole).toDate();
-        int kvoDay=getKvoDay(id_rab,beg,end);
-
         sumData sum=getSum(id_rab,beg,end);
-
-        if (!kvoDay) continue;
 
         ws->writeString(m,1,firstName,strFormat);
         ws->writeString(m,2,lastName,strFormat);
         ws->writeString(m,3,middleName,strFormat);
         ws->writeString(m,4,prof,strFormat);
         numFormat.setNumberFormat("0");
-        ws->writeNumeric(m,5,kvoDay,numFormat);
+        ws->writeNumeric(m,5,sum.kvoDay,numFormat);
         numFormat.setNumberFormatIndex(4);
 
         ws->writeNumeric(m,6,sum.zpl,numFormat);
@@ -594,7 +608,6 @@ void FormCalcWage::tabel()
 
         int id_rab;
         QString firstName, lastName, middleName, prof;
-        int kvoDay;
 
         id_rab=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,0)).toInt();
         firstName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,1)).toString();
@@ -656,10 +669,6 @@ void FormCalcWage::tabel()
 
         m+=2;
 
-        kvoDay=getKvoDay(id_rab,beg,end);
-
-        if (!kvoDay) continue;
-
         ws->setRowHeight(m,m,35);
 
         numFormat.setNumberFormat("0");
@@ -674,7 +683,7 @@ void FormCalcWage::tabel()
         ws->writeNumeric(m,6,sum.total,numFormat);
 
         numFormat.setNumberFormat("0");
-        ws->writeNumeric(m,7,kvoDay,numFormat);
+        ws->writeNumeric(m,7,sum.kvoDay,numFormat);
         ws->writeBlank(m,8,strFormat);
         ws->writeBlank(m,9,strFormat);
         for (int i=10; i<=18; i++){
@@ -723,7 +732,7 @@ void FormCalcWage::tabel()
     }
 
     QString year=QString::number(ui->dateEditBeg->date().year());
-    QString month=QDate::longMonthName(ui->dateEditBeg->date().month(),QDate::StandaloneFormat);
+    QString month=QLocale().standaloneMonthName(ui->dateEditBeg->date().month());
     QString dat=month+" "+year+QString(" г.");
     QString org=QString(" (с %1 по %2) ").arg(ui->dateEditBeg->date().toString("dd.MM.yy")).arg(ui->dateEditEnd->date().toString("dd.MM.yy"))+orgName;
 

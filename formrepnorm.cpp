@@ -453,7 +453,7 @@ void FormRepNorm::saveXlsPer()
                 m_beg=m;
             }
 
-            if (date_old!=date || id_rb_old!=id_rb || otr_old!=otr|| smena_old!=smena){
+            if (date_old!=date || id_rb_old!=id_rb || otr_old!=otr || smena_old!=smena){
                 numFormat.setNumberFormat("0");
                 ws->mergeCells(CellRange(m_otr,4,m-1,4),numFormat);
                 m_otr=m;

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1059</width>
-    <height>550</height>
+    <width>1064</width>
+    <height>560</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -101,6 +101,16 @@
        </property>
        <property name="text">
         <string>Табель по видам работ</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonMon">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Отчет по прем.</string>
        </property>
       </widget>
      </item>
@@ -247,7 +257,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_10">
+          <widget class="QLabel" name="labelPrem">
            <property name="text">
             <string>Пр.мес.</string>
            </property>
