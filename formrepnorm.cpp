@@ -503,7 +503,7 @@ void FormRepNorm::saveXlsPer()
         ws->setFooterData(footerData);
 
         QString name;
-        QSet sel=modelZon->getSel();
+        QSet<int> sel=modelZon->getSel();
         if (sel.contains(2) && !sel.contains(6)){
             name=QString("прессовщики ")+fperiod;
         } else if (sel.contains(6) && !sel.contains(2)){
