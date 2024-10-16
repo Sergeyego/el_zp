@@ -53,6 +53,7 @@
      <string>Отчеты</string>
     </property>
     <addaction name="actionRepNorm"/>
+    <addaction name="actionRepTarif"/>
    </widget>
    <widget class="QMenu" name="menu_4">
     <property name="title">
@@ -95,6 +96,11 @@
   <action name="actionTarif">
    <property name="text">
     <string>Тарифы</string>
+   </property>
+  </action>
+  <action name="actionRepTarif">
+   <property name="text">
+    <string>Отчет по тарифам</string>
    </property>
   </action>
  </widget>

@@ -31,6 +31,7 @@ SOURCES += \
     formrab.cpp \
     formrepmon.cpp \
     formrepnorm.cpp \
+    formreptarif.cpp \
     formtarif.cpp \
     httpsyncmanager.cpp \
         main.cpp \
@@ -59,6 +60,7 @@ HEADERS += \
     formrab.h \
     formrepmon.h \
     formrepnorm.h \
+    formreptarif.h \
     formtarif.h \
     httpsyncmanager.h \
         mainwindow.h \
@@ -86,6 +88,7 @@ FORMS += \
     formrab.ui \
     formrepmon.ui \
     formrepnorm.ui \
+    formreptarif.ui \
     formtarif.ui \
         mainwindow.ui \
     db/dblogin.ui \

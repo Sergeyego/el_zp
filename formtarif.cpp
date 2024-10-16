@@ -16,17 +16,17 @@ FormTarif::FormTarif(QWidget *parent) :
     modelMark = new ModelZon(tr("Марка"),Rels::instance()->relMark,this);
     ui->tableViewMark->setModel(modelMark);
     ui->tableViewMark->setColumnWidth(0,240);
-    modelMark->checkAll();
+    modelMark->checkAll(true);
 
     modelDiam = new ModelZon(tr("Диаметр"),Rels::instance()->relDiam,this);
     ui->tableViewDiam->setModel(modelDiam);
     ui->tableViewDiam->setColumnWidth(0,80);
-    modelDiam->checkAll();
+    modelDiam->checkAll(true);
 
     modelComp = new ModelZon(tr("Компонент"),Rels::instance()->relComp,this);
     ui->tableViewComp->setModel(modelComp);
     ui->tableViewComp->setColumnWidth(0,240);
-    modelComp->checkAll();
+    modelComp->checkAll(true);
 
     modelJob = new ModelRo(this);
     ui->tableViewJob->setModel(modelJob);

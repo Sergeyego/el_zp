@@ -85,12 +85,17 @@ QSet<int> ModelZon::getSel()
 
 void ModelZon::checkAll()
 {
-    if (is_inital){
+    checkAll(!is_checked);
+}
+
+void ModelZon::checkAll(bool b)
+{
+    if (is_inital && this->sourceModel()->rowCount()){
         beginResetModel();
-        if (is_checked){
+        if (!b){
             sel.clear();
         } else {
-            for (int i=0; i<this->rowCount();i++){
+            for (int i=0; i<this->sourceModel()->rowCount();i++){
                 sel.insert(this->sourceModel()->data(this->sourceModel()->index(i,0),Qt::EditRole).toInt());
             }
         }
@@ -106,7 +111,10 @@ void ModelZon::updFinished()
 {
     is_inital=true;
     if (checkFlg){
-        checkAll();
+        for (int i=0; i<this->sourceModel()->rowCount();i++){
+            sel.insert(this->sourceModel()->data(this->sourceModel()->index(i,0),Qt::EditRole).toInt());
+        }
+        is_checked=!is_checked;
         checkFlg=false;
     }
 }

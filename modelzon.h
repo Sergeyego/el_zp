@@ -20,6 +20,7 @@ public:
     QSet<int> getSel();
 public slots:
     void checkAll();
+    void checkAll(bool b);
 private:
     QSet<int> sel;
     bool is_checked;
