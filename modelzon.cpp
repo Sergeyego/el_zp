@@ -1,32 +1,46 @@
 #include "modelzon.h"
 
-ModelZon::ModelZon(QObject *parent)
-    : ModelRo(parent)
+ModelZon::ModelZon(QString name, DbSqlRelation *rel, QObject *parent)
+    : nam(name), QSortFilterProxyModel(parent)
 {
-    refresh();
+    is_checked=false;
+    checkFlg=false;
+    is_inital=rel->isInital();
+    connect(rel->model(),SIGNAL(searchFinished(QString)),this,SLOT(updFinished()));
+    if (!is_inital){
+        rel->refreshModel();
+    }
+    this->setSourceModel(rel->model());
 }
 
-Qt::ItemFlags ModelZon::flags(const QModelIndex &index) const
+Qt::ItemFlags ModelZon::flags(const QModelIndex &/*index*/) const
 {
-    if (index.column()==1){
-        return Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled;
+    return Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled;
+}
+
+QVariant ModelZon::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if (orientation==Qt::Horizontal && role==Qt::DisplayRole){
+        return nam;
     }
-    return ModelRo::flags(index);
+    return QSortFilterProxyModel::headerData(section,orientation,role);
 }
 
 QVariant ModelZon::data(const QModelIndex &item, int role) const
 {
-    if (role==Qt::CheckStateRole && item.column()==1){
-        int id = this->data(this->index(item.row(),0),Qt::EditRole).toInt();
+    if (role==Qt::CheckStateRole){
+        QModelIndex ind = this->mapToSource(item);
+        int id = this->sourceModel()->data(this->sourceModel()->index(ind.row(),0),Qt::EditRole).toInt();
         return sel.contains(id) ? Qt::Checked : Qt::Unchecked;
     }
-    return ModelRo::data(item,role);
+    return QSortFilterProxyModel::data(item,role);
 }
 
 bool ModelZon::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (role==Qt::CheckStateRole && index.column()==1){
-        int id = this->data(this->index(index.row(),0),Qt::EditRole).toInt();
+    if (role==Qt::CheckStateRole){
+        QModelIndex ind = this->mapToSource(index);
+        int id = this->sourceModel()->data(this->sourceModel()->index(ind.row(),0),Qt::EditRole).toInt();
         if (value.toBool()){
             sel.insert(id);
         } else {
@@ -35,7 +49,12 @@ bool ModelZon::setData(const QModelIndex &index, const QVariant &value, int role
         emit supd();
         return true;
     }
-    return ModelRo::setData(index,value,role);
+    return QSortFilterProxyModel::setData(index,value,role);
+}
+
+bool ModelZon::filterAcceptsColumn(int source_column, const QModelIndex &/*source_parent*/) const
+{
+    return source_column==1;
 }
 
 void ModelZon::setSel(QSet<int> set)
@@ -59,21 +78,35 @@ QString ModelZon::getStr()
     return str;
 }
 
-bool ModelZon::pres()
+QSet<int> ModelZon::getSel()
 {
-    return sel.contains(2);
+    return sel;
 }
 
-bool ModelZon::pack()
+void ModelZon::checkAll()
 {
-    return sel.contains(6);
+    if (is_inital){
+        beginResetModel();
+        if (is_checked){
+            sel.clear();
+        } else {
+            for (int i=0; i<this->rowCount();i++){
+                sel.insert(this->sourceModel()->data(this->sourceModel()->index(i,0),Qt::EditRole).toInt());
+            }
+        }
+        endResetModel();
+        emit supd();
+        is_checked=!is_checked;
+    } else {
+        checkFlg=true;
+    }
 }
 
-void ModelZon::refresh()
+void ModelZon::updFinished()
 {
-    QSqlQuery query;
-    query.prepare("select id, nam from rab_zon order by nam");
-    if (execQuery(query)){
-        setHeaderData(1,Qt::Horizontal,tr("Участки"));
+    is_inital=true;
+    if (checkFlg){
+        checkAll();
+        checkFlg=false;
     }
 }

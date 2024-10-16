@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1014</width>
-    <height>690</height>
+    <width>1012</width>
+    <height>688</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,7 +32,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1014</width>
+     <width>1012</width>
      <height>25</height>
     </rect>
    </property>
@@ -60,6 +60,7 @@
     </property>
     <addaction name="actionRab"/>
     <addaction name="actionLiter"/>
+    <addaction name="actionTarif"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -89,6 +90,11 @@
   <action name="actionRab">
    <property name="text">
     <string>Работники</string>
+   </property>
+  </action>
+  <action name="actionTarif">
+   <property name="text">
+    <string>Тарифы</string>
    </property>
   </action>
  </widget>

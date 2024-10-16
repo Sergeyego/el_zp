@@ -12,12 +12,6 @@ Rels *Rels::instance()
 
 Rels::Rels(QObject *parent) : QObject(parent)
 {  
-    relProf = new DbSqlRelation("rab_prof","id","nam",this);
-    relProf->setSort("rab_prof.nam");
-
-    relRazr = new DbSqlRelation("rab_razr","id","num",this);
-    relRazr->setSort("rab_razr.num");
-
     relLiter = new DbSqlRelation("rab_liter","id","naim",this);
     relLiter->setSort("rab_liter.naim");
 
@@ -37,5 +31,16 @@ Rels::Rels(QObject *parent) : QObject(parent)
 
     relKaminEmp = new DbSqlRelation("kamin_empl","id","str",this);
     relKaminEmp->setSort("kamin_empl.str");
+
+    relMark = new DbSqlRelation("elrtr","id","marka",this);
+    relMark->setFilter("elrtr.id>0");
+    relMark->setSort("elrtr.marka");
+
+    relDiam = new DbSqlRelation("diam","id","sdim",this);
+    relDiam->setFilter("diam.is_el=1");
+    relDiam->setSort("diam.diam");
+
+    relComp = new DbSqlRelation("matr","id","nam",this);
+    relComp->setSort("matr.nam");
 }
 

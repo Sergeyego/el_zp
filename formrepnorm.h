@@ -8,6 +8,7 @@
 #include <QSortFilterProxyModel>
 #include "db/dbtablemodel.h"
 #include "modelzon.h"
+#include "rels.h"
 
 namespace Ui {
 class FormRepNorm;

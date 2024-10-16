@@ -9,14 +9,15 @@ class Rels : public QObject
     Q_OBJECT
 public:
     static Rels *instance();
-    DbSqlRelation *relProf;
-    DbSqlRelation *relRazr;
     DbSqlRelation *relLiter;
     DbSqlRelation *relZon;
     DbSqlRelation *relList;
     DbSqlRelation *relEd;
     DbSqlRelation *relConn;
     DbSqlRelation *relKaminEmp;
+    DbSqlRelation *relMark;
+    DbSqlRelation *relDiam;
+    DbSqlRelation *relComp;
 
 protected:
     explicit Rels(QObject *parent = nullptr);

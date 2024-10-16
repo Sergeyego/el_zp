@@ -7,13 +7,12 @@ FormRepNorm::FormRepNorm(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    modelZon = new ModelZon(this);
+    modelZon = new ModelZon(tr("Участки"),Rels::instance()->relZon, this);
     QSet<int> set;
     set<<2<<23;
     modelZon->setSel(set);
     ui->tableViewZon->setModel(modelZon);
-    ui->tableViewZon->setColumnHidden(0,true);
-    ui->tableViewZon->setColumnWidth(1,270);
+    ui->tableViewZon->setColumnWidth(0,270);
 
     QSqlQuery query;
     query.prepare("select sign_rep_el from hoz where id=11");
@@ -52,6 +51,7 @@ FormRepNorm::FormRepNorm(QWidget *parent) :
     connect(ui->cmdOtchPer,SIGNAL(clicked()),this,SLOT(goRep()));
     connect(modelZon,SIGNAL(supd()),this,SLOT(upd()));
     connect(ui->jobView->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(updTotal(QModelIndex)));
+    connect(ui->tableViewZon->horizontalHeader(),SIGNAL(sectionClicked(int)),modelZon,SLOT(checkAll()));
 }
 
 FormRepNorm::~FormRepNorm()
@@ -503,9 +503,10 @@ void FormRepNorm::saveXlsPer()
         ws->setFooterData(footerData);
 
         QString name;
-        if (modelZon->pres() && !modelZon->pack()){
+        QSet sel=modelZon->getSel();
+        if (sel.contains(2) && !sel.contains(6)){
             name=QString("прессовщики ")+fperiod;
-        } else if (modelZon->pack() && !modelZon->pres()){
+        } else if (sel.contains(6) && !sel.contains(2)){
             name=QString("упаковщики ")+fperiod;
         } else {
             name=QString("Отчет работы структурного подразделения цех по производству сварочных электродов ")+period;
@@ -546,7 +547,9 @@ void FormRepNorm::goRep()
 
 void FormRepNorm::upd()
 {
-    modelZon->refresh();
+    if (sender()==ui->cmdRefresh){
+        Rels::instance()->relZon->refreshModel();
+    }
     bool by_line=ui->radioButtonLine->isChecked();
     jobmodel->refresh(by_line,modelZon->getStr(),ui->radioButtonSm->isChecked(),ui->dateBeg->date(),ui->dateEnd->date());
     ui->jobView->setColumnHidden(0,true);

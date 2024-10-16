@@ -9,7 +9,7 @@
 #include "formrepnorm.h"
 #include "formliter.h"
 #include "formrab.h"
-
+#include "formtarif.h"
 
 namespace Ui {
 class MainWindow;
@@ -40,6 +40,7 @@ private slots:
     void newFormRepNorm();
     void newFormLiter();
     void newFormRab();
+    void newFormTarif();
 };
 
 #endif // MAINWINDOW_H

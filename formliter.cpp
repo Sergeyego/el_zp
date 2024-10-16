@@ -17,6 +17,7 @@ FormLiter::FormLiter(QWidget *parent) :
     modelLiter->addColumn("liter",tr("Лит."));
     modelLiter->addColumn("conn",tr("Вид связи"),Rels::instance()->relConn);
     modelLiter->addColumn("zon",tr("Участок"),Rels::instance()->relZon);
+    modelLiter->setFilter("rab_liter.id<>0");
 
     ui->tableViewLiter->setModel(modelLiter);
     ui->tableViewLiter->setColumnHidden(0,true);
