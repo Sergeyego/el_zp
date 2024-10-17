@@ -18,6 +18,9 @@ public:
     DbSqlRelation *relMark;
     DbSqlRelation *relDiam;
     DbSqlRelation *relComp;
+    DbSqlRelation *relJobNam;
+    DbSqlRelation *relRab;
+    DbSqlRelation *relPress;
 
 protected:
     explicit Rels(QObject *parent = nullptr);

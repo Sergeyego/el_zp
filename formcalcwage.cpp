@@ -543,6 +543,13 @@ void FormCalcWage::tabel()
         return;
     }
 
+    DialogTabel d(ui->listViewRab->model());
+    if (d.exec()!=QDialog::Accepted){
+        return;
+    }
+
+    QSet<int> sel=d.getSel();
+
     QString title=QString("Начисление заработной платы с %1 по %2").arg(ui->dateEditBeg->date().toString("dd.MM.yy")).arg(ui->dateEditEnd->date().toString("dd.MM.yy"));
 
     Document xlsx;
@@ -603,17 +610,19 @@ void FormCalcWage::tabel()
     ws->setColumnWidth(16,16,10);
     ws->setColumnWidth(17,17,10);
     ws->setColumnWidth(18,18,11);
+    int num=1;
 
     for (int i=0; i<rabcount; i++){
 
-        int id_rab;
-        QString firstName, lastName, middleName, prof;
+        int id_rab=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,0)).toInt();
+        if (!sel.contains(id_rab)){
+            continue;
+        }
 
-        id_rab=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,0)).toInt();
-        firstName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,1)).toString();
-        lastName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,2)).toString();
-        middleName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,3)).toString();
-        prof=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,6)).toString();
+        QString firstName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,1)).toString();
+        QString lastName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,2)).toString();
+        QString middleName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,3)).toString();
+        QString prof=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,6)).toString();
         QDate beg=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,8),Qt::EditRole).toDate();
         QDate end=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,9),Qt::EditRole).toDate();
 
@@ -672,7 +681,7 @@ void FormCalcWage::tabel()
         ws->setRowHeight(m,m,35);
 
         numFormat.setNumberFormat("0");
-        ws->writeNumeric(m,1,i+1,numFormat);
+        ws->writeNumeric(m,1,num,numFormat);
 
         ws->writeString(m,2,firstName,strFormat);
         ws->writeString(m,3,lastName,strFormat);
@@ -729,6 +738,7 @@ void FormCalcWage::tabel()
         m++;
         ws->insertRowBreak(m);
         m++;
+        num++;
     }
 
     QString year=QString::number(ui->dateEditBeg->date().year());

@@ -8,6 +8,7 @@
 #include "db/tablemodel.h"
 #include "progressexecutor.h"
 #include "formrepmon.h"
+#include "dialogtabel.h"
 
 namespace Ui {
 class FormCalcWage;

@@ -11,6 +11,7 @@
 #include "formrab.h"
 #include "formtarif.h"
 #include "formreptarif.h"
+#include "formjob.h"
 
 namespace Ui {
 class MainWindow;
@@ -43,6 +44,7 @@ private slots:
     void newFormRab();
     void newFormTarif();
     void newFormRepTarif();
+    void newFormJob();
 };
 
 #endif // MAINWINDOW_H

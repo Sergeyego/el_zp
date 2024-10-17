@@ -9,24 +9,21 @@ FormTarif::FormTarif(QWidget *parent) :
 
     sqlExecutor = new ProgressExecutor(this);
 
-    modelZon = new ModelZon(tr("Участок"),Rels::instance()->relZon,this);
+    modelZon = new ModelZon(tr("Участок"),Rels::instance()->relZon->model(),false,this);
     ui->tableViewZon->setModel(modelZon);
     ui->tableViewZon->setColumnWidth(0,240);
 
-    modelMark = new ModelZon(tr("Марка"),Rels::instance()->relMark,this);
+    modelMark = new ModelZon(tr("Марка"),Rels::instance()->relMark->model(),true,this);
     ui->tableViewMark->setModel(modelMark);
     ui->tableViewMark->setColumnWidth(0,240);
-    modelMark->checkAll(true);
 
-    modelDiam = new ModelZon(tr("Диаметр"),Rels::instance()->relDiam,this);
+    modelDiam = new ModelZon(tr("Диаметр"),Rels::instance()->relDiam->model(),true,this);
     ui->tableViewDiam->setModel(modelDiam);
     ui->tableViewDiam->setColumnWidth(0,80);
-    modelDiam->checkAll(true);
 
-    modelComp = new ModelZon(tr("Компонент"),Rels::instance()->relComp,this);
+    modelComp = new ModelZon(tr("Компонент"),Rels::instance()->relComp->model(),true,this);
     ui->tableViewComp->setModel(modelComp);
     ui->tableViewComp->setColumnWidth(0,240);
-    modelComp->checkAll(true);
 
     modelJob = new ModelRo(this);
     ui->tableViewJob->setModel(modelJob);

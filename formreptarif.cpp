@@ -7,8 +7,7 @@ FormRepTarif::FormRepTarif(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->dateEdit->setDate(QDate::currentDate());
-    modelZon = new ModelZon(tr("Участок"),Rels::instance()->relZon,this);
-    modelZon->checkAll(true);
+    modelZon = new ModelZon(tr("Участок"),Rels::instance()->relZon->model(),true,this);
     ui->tableViewZon->setModel(modelZon);
     ui->tableViewZon->setColumnWidth(0,250);
 

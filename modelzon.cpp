@@ -1,16 +1,23 @@
 #include "modelzon.h"
 
-ModelZon::ModelZon(QString name, DbSqlRelation *rel, QObject *parent)
+ModelZon::ModelZon(QString name, QAbstractItemModel *srcModel, bool chkAll, QObject *parent)
     : nam(name), QSortFilterProxyModel(parent)
 {
-    is_checked=false;
-    checkFlg=false;
-    is_inital=rel->isInital();
-    connect(rel->model(),SIGNAL(searchFinished(QString)),this,SLOT(updFinished()));
-    if (!is_inital){
-        rel->refreshModel();
+    is_checked=chkAll;
+    checkFlg=chkAll;
+    viewCol=1;
+    this->setSourceModel(srcModel);
+    DbSqlLikeModel *likeModel = qobject_cast <DbSqlLikeModel *>(srcModel);
+    if (likeModel){
+        connect(likeModel,SIGNAL(searchFinished(QString)),this,SLOT(updFinished()));
+        if (!likeModel->getRelation()->isInital()){
+            likeModel->getRelation()->refreshModel();
+        } else if (likeModel->rowCount()){
+            updFinished();
+        }
+    } else {
+        updFinished();
     }
-    this->setSourceModel(rel->model());
 }
 
 Qt::ItemFlags ModelZon::flags(const QModelIndex &/*index*/) const
@@ -46,6 +53,7 @@ bool ModelZon::setData(const QModelIndex &index, const QVariant &value, int role
         } else {
             sel.remove(id);
         }
+        emit dataChanged(this->index(0,0),this->index(rowCount()-1,0));
         emit supd();
         return true;
     }
@@ -54,7 +62,7 @@ bool ModelZon::setData(const QModelIndex &index, const QVariant &value, int role
 
 bool ModelZon::filterAcceptsColumn(int source_column, const QModelIndex &/*source_parent*/) const
 {
-    return source_column==1;
+    return source_column==viewCol;
 }
 
 void ModelZon::setSel(QSet<int> set)
@@ -83,6 +91,11 @@ QSet<int> ModelZon::getSel()
     return sel;
 }
 
+void ModelZon::setViewColumn(int c)
+{
+    viewCol=c;
+}
+
 void ModelZon::checkAll()
 {
     checkAll(!is_checked);
@@ -90,31 +103,30 @@ void ModelZon::checkAll()
 
 void ModelZon::checkAll(bool b)
 {
-    if (is_inital && this->sourceModel()->rowCount()){
-        beginResetModel();
-        if (!b){
-            sel.clear();
-        } else {
-            for (int i=0; i<this->sourceModel()->rowCount();i++){
-                sel.insert(this->sourceModel()->data(this->sourceModel()->index(i,0),Qt::EditRole).toInt());
-            }
-        }
-        endResetModel();
-        emit supd();
-        is_checked=!is_checked;
+    beginResetModel();
+    if (!b){
+        sel.clear();
     } else {
-        checkFlg=true;
+        setCheckAll();
+    }
+    endResetModel();
+    emit supd();
+    is_checked=!is_checked;
+}
+
+void ModelZon::setCheckAll()
+{
+    for (int i=0; i<this->sourceModel()->rowCount();i++){
+        sel.insert(this->sourceModel()->data(this->sourceModel()->index(i,0),Qt::EditRole).toInt());
     }
 }
 
 void ModelZon::updFinished()
 {
-    is_inital=true;
     if (checkFlg){
-        for (int i=0; i<this->sourceModel()->rowCount();i++){
-            sel.insert(this->sourceModel()->data(this->sourceModel()->index(i,0),Qt::EditRole).toInt());
-        }
-        is_checked=!is_checked;
+        beginResetModel();
+        setCheckAll();
+        endResetModel();
         checkFlg=false;
     }
 }

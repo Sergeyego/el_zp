@@ -9,7 +9,7 @@ class ModelZon : public QSortFilterProxyModel
 {
     Q_OBJECT
 public:
-    explicit ModelZon(QString name, DbSqlRelation *rel, QObject *parent = nullptr);
+    explicit ModelZon(QString name, QAbstractItemModel *srcModel, bool chkAll, QObject *parent = nullptr);
     Qt::ItemFlags flags(const QModelIndex &index) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     QVariant data(const QModelIndex &item, int role) const;
@@ -18,6 +18,8 @@ public:
     void setSel(QSet<int> set);
     QString getStr();
     QSet<int> getSel();
+    void setViewColumn(int c);
+
 public slots:
     void checkAll();
     void checkAll(bool b);
@@ -26,7 +28,8 @@ private:
     bool is_checked;
     QString nam;
     bool checkFlg;
-    bool is_inital;
+    void setCheckAll();
+    int viewCol;
 private slots:
     void updFinished();
 signals:

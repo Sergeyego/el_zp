@@ -18,6 +18,7 @@ Rels::Rels(QObject *parent) : QObject(parent)
     relZon = new DbSqlRelation("rab_zon","id","nam",this);
     relZon->setSort("rab_zon.nam");
     relZon->setEditable(true);
+    relZon->model()->setAsync(false);
 
     relList = new DbSqlRelation("rab_prem_list","id","nam",this);
     relList->setSort("rab_prem_list.nam");
@@ -31,6 +32,7 @@ Rels::Rels(QObject *parent) : QObject(parent)
 
     relKaminEmp = new DbSqlRelation("kamin_empl","id","str",this);
     relKaminEmp->setSort("kamin_empl.str");
+    relKaminEmp->model()->setAsync(false);
 
     relMark = new DbSqlRelation("elrtr","id","marka",this);
     relMark->setFilter("elrtr.id>0");
@@ -42,5 +44,14 @@ Rels::Rels(QObject *parent) : QObject(parent)
 
     relComp = new DbSqlRelation("matr","id","nam",this);
     relComp->setSort("matr.nam");
+
+    relJobNam = new DbSqlRelation("rab_nams","lid","fnam",this);
+    relJobNam->setSort("rab_nams.fnam");
+
+    relRab = new DbSqlRelation("rab_rab","id","snam",this);
+    relRab->setSort("rab_rab.snam");
+
+    relPress = new DbSqlRelation("pres","id","nam",this);
+    relPress->setSort("pres.nam");
 }
 

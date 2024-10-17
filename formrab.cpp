@@ -117,6 +117,7 @@ void FormRab::cbChanged()
 
 void FormRab::upd()
 {
+    int id_rab=mapper->modelData(mapper->currentIndex(),0).toInt();
     pprd->show();
     QByteArray data;
     if (HttpSyncManager::sendGet("/rab/sync",data)){
@@ -124,4 +125,13 @@ void FormRab::upd()
         modelRab->select();
     }
     pprd->hide();
+    if (id_rab>0){
+        for (int i=0; i<ui->tableViewRab->model()->rowCount();i++){
+            int id=ui->tableViewRab->model()->data(ui->tableViewRab->model()->index(i,0),Qt::EditRole).toInt();
+            if (id==id_rab){
+                mapper->setCurrentViewRow(i);
+                break;
+            }
+        }
+    }
 }

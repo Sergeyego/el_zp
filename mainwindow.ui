@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1012</width>
-    <height>688</height>
+    <width>1008</width>
+    <height>684</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,6 +23,9 @@
       <property name="tabsClosable">
        <bool>true</bool>
       </property>
+      <property name="movable">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
    </layout>
@@ -32,7 +35,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1012</width>
+     <width>1008</width>
      <height>25</height>
     </rect>
    </property>
@@ -63,10 +66,17 @@
     <addaction name="actionLiter"/>
     <addaction name="actionTarif"/>
    </widget>
+   <widget class="QMenu" name="menu_5">
+    <property name="title">
+     <string>Выполнение работ</string>
+    </property>
+    <addaction name="actionJob"/>
+   </widget>
+   <addaction name="menu_4"/>
+   <addaction name="menu_5"/>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
    <addaction name="menu_3"/>
-   <addaction name="menu_4"/>
   </widget>
   <action name="actionCalcWage">
    <property name="text">
@@ -101,6 +111,11 @@
   <action name="actionRepTarif">
    <property name="text">
     <string>Отчет по тарифам</string>
+   </property>
+  </action>
+  <action name="actionJob">
+   <property name="text">
+    <string>Выполнение работ</string>
    </property>
   </action>
  </widget>

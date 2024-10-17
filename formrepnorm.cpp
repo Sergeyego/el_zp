@@ -7,7 +7,7 @@ FormRepNorm::FormRepNorm(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    modelZon = new ModelZon(tr("Участки"),Rels::instance()->relZon, this);
+    modelZon = new ModelZon(tr("Участки"),Rels::instance()->relZon->model(),false, this);
     QSet<int> set;
     set<<2<<23;
     modelZon->setSel(set);

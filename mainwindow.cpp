@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
     actAction(ui->actionRab,&MainWindow::newFormRab);
     actAction(ui->actionTarif,&MainWindow::newFormTarif);
     actAction(ui->actionRepTarif,&MainWindow::newFormRepTarif);
+    actAction(ui->actionJob,&MainWindow::newFormJob);
 
     loadSettings();
     QObject::connect(ui->tabWidget,&QTabWidget::tabCloseRequested,this,&MainWindow::closeTab);
@@ -153,6 +154,13 @@ void MainWindow::newFormRepTarif()
 {
     if (!exist(sender())){
         addSubWindow(new FormRepTarif(),sender());
+    }
+}
+
+void MainWindow::newFormJob()
+{
+    if (!exist(sender())){
+        addSubWindow(new FormJob(),sender());
     }
 }
 

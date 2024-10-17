@@ -26,6 +26,8 @@ include(xlsx/qtxlsx.pri)
 
 
 SOURCES += \
+    dialogtabel.cpp \
+    formjob.cpp \
     formliter.cpp \
     formpremmon.cpp \
     formrab.cpp \
@@ -55,6 +57,8 @@ SOURCES += \
     modelro.cpp
 
 HEADERS += \
+    dialogtabel.h \
+    formjob.h \
     formliter.h \
     formpremmon.h \
     formrab.h \
@@ -83,6 +87,8 @@ HEADERS += \
     modelro.h
 
 FORMS += \
+    dialogtabel.ui \
+    formjob.ui \
     formliter.ui \
     formpremmon.ui \
     formrab.ui \
