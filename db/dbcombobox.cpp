@@ -53,7 +53,7 @@ void DbComboBox::setModel(QAbstractItemModel *model)
         connect(sqlModel,SIGNAL(searchFinished(QString)),this,SLOT(updData()));
 
         DbSqlLikeModel *likeModel = new DbSqlLikeModel(sqlModel->getRelation(),this);
-        likeModel->setAsync(true);
+        likeModel->setAsync(sqlModel->isAsync());
         sqlCompleter->setModel(likeModel);
         sqlCompleter->setCompletionColumn(1);
 

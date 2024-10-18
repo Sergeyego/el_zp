@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>971</width>
-    <height>610</height>
+    <width>969</width>
+    <height>608</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -59,6 +59,43 @@
      </item>
      <item>
       <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Партия</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEditPart">
+       <property name="maximumSize">
+        <size>
+         <width>80</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="toolButtonPart">
+       <property name="text">
+        <string>X</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_5">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -126,9 +163,12 @@
      </item>
      <item>
       <widget class="DbComboBox" name="comboBoxRab">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="minimumSize">
         <size>
-         <width>250</width>
+         <width>300</width>
          <height>0</height>
         </size>
        </property>

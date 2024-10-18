@@ -885,6 +885,11 @@ bool DbSqlLikeModel::isInital()
     return inital;
 }
 
+bool DbSqlLikeModel::isAsync()
+{
+    return async;
+}
+
 void DbSqlLikeModel::startSearch(QString s)
 {
     inital=true;
@@ -893,6 +898,8 @@ void DbSqlLikeModel::startSearch(QString s)
     QString flt;
     QString pattern = s;
     pattern.replace("'","''");
+    pattern.replace("%","/%");
+    pattern.replace("_","/_");
 
     if (!relation->getFilter().isEmpty() || !s.isEmpty()){
         flt+=" WHERE ";
@@ -903,7 +910,7 @@ void DbSqlLikeModel::startSearch(QString s)
             }
         }
         if (!s.isEmpty()){
-            flt+=relation->getCDisplay()+" ILIKE '"+pattern+"%'";
+            flt+=relation->getCDisplay()+" ILIKE '"+pattern+"%' ESCAPE '/'";
         }
     }
 

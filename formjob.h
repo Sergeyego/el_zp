@@ -16,7 +16,11 @@ class ModelJob : public DbTableModel
 
 public:
     explicit ModelJob(QWidget *parent = nullptr);
-    void refresh(QDate beg, QDate end, QString zon, int id_rb=-1);
+    void refresh(QDate beg, QDate end, QString zon, int id_rb=-1, bool zero=false, QString parti="");
+    void setIdBrig(int id);
+    int getIdBrig();
+private:
+    int id_brig;
 };
 
 class ModelShare : public DbTableModel
@@ -40,9 +44,13 @@ private:
     Ui::FormJob *ui;
     ModelZon *modelZon;
     ModelJob *modelJob;
+    ModelShare *modelShare;
+    bool updTempTables();
 
 private slots:
     void upd();
+    void updShare(QModelIndex ind);
+    void chkRab(int row);
 };
 
 #endif // FORMJOB_H

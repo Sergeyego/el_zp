@@ -31,6 +31,7 @@ public:
     TableModel *originalModel();
     DbSqlRelation *getRelation();
     bool isInital();
+    bool isAsync();
 
 public slots:
     void startSearch(QString s);
