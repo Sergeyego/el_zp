@@ -229,17 +229,7 @@ void FormCalcWage::updFinished()
 {
     QVector<QVector<QVariant>> data = sqlExecutor->getData();
     QSqlQuery query;
-    query.prepare("select rr.id, rr.fam, rr.nam, rr.otc, ge.tabel, coalesce(rr.snam ||' '||kj.nam, rr.snam), kj.nam, "
-                  "rr.snam, coalesce(ge.dat,:d1), coalesce(ge.datend - interval '1 day',:d2) "
-                  "from rab_rab rr "
-                  "inner join ( "
-                  "    select rs.id_rab as id_rab, count(distinct rj.dat) as sdat from rab_share rs "
-                  "    inner join rab_job rj on rj.id = rs.id_job "
-                  "    where rj.dat between :d1 and :d2 "
-                  "    group by rs.id_rab ) as zwc on zwc.id_rab = rr.id "
-                  "left join kamin_get_empl(:d1,:d2) as ge on ge.id_empl = rr.id_kamin "
-                  "left join kamin_job kj on kj.id = ge.id_job "
-                  "order by rr.fam, rr.nam, rr.otc, ge.dat");
+    query.prepare("select id, fam, nam, otc, tabel, fnam, prof, snam, begdate, enddate from zrw_empl(:d1,:d2)");
     query.bindValue(":d1",ui->dateEditBeg->date());
     query.bindValue(":d2",ui->dateEditEnd->date());
     if (modelRab->execQuery(query)){

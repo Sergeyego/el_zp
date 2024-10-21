@@ -17,6 +17,7 @@ FormLiter::FormLiter(QWidget *parent) :
     modelLiter->addColumn("liter",tr("Лит."));
     modelLiter->addColumn("conn",tr("Вид связи"),Rels::instance()->relConn);
     modelLiter->addColumn("zon",tr("Участок"),Rels::instance()->relZon);
+    modelLiter->addColumn("is_nrm",tr("Нормируемая"));
     modelLiter->setFilter("rab_liter.id<>0");
 
     ui->tableViewLiter->setModel(modelLiter);
@@ -27,6 +28,7 @@ FormLiter::FormLiter(QWidget *parent) :
     ui->tableViewLiter->setColumnWidth(4,70);
     ui->tableViewLiter->setColumnWidth(5,220);
     ui->tableViewLiter->setColumnWidth(6,200);
+    ui->tableViewLiter->setColumnWidth(7,100);
 
     connect(ui->pushButtonUpd,SIGNAL(clicked(bool)),this,SLOT(upd()));
     connect(ui->pushButtonFullUpd,SIGNAL(clicked(bool)),this,SLOT(fullUpd()));

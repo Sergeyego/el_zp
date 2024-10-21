@@ -102,12 +102,19 @@ void FormJob::chkRab(int row)
     if (row==6){
         int id_brig = modelJob->getIdBrig()>0 ? -1 : ui->tableViewJob->model()->data(ui->tableViewJob->model()->index(ui->tableViewJob->currentIndex().row(),6),Qt::EditRole).toInt();
         modelJob->setIdBrig(id_brig);
-        upd();
+        if (id_brig>0 && ui->checkBoxRab->isChecked()){
+            ui->checkBoxRab->setChecked(false);
+            ui->checkBoxRab->clicked();
+        } else {
+            upd();
+        }
     }
 }
 
 ModelJob::ModelJob(QWidget *parent) : DbTableModel("rab_job",parent)
 {
+    executorSt = new Executor(this);
+    id_brig=-1;
     addColumn("id",tr("id"));
     addColumn("lid",tr("Наименование работы"),Rels::instance()->relJobNam);
     addColumn("dat",tr("Дата уч."));
@@ -121,12 +128,33 @@ ModelJob::ModelJob(QWidget *parent) : DbTableModel("rab_job",parent)
 
     setSuffix("left join rab_nams on rab_nams.lid = rab_job.lid left join rab_liter on rab_liter.id = rab_nams.id");
     setDecimals(4,3);
+
+    connect(this,SIGNAL(sigRefresh()),this,SLOT(refreshState()));
+    connect(this,SIGNAL(sigUpd()),this,SLOT(refreshState()));
+    connect(executorSt,SIGNAL(finished()),this,SLOT(stFinished()));
+}
+
+QVariant ModelJob::data(const QModelIndex &index, int role) const
+{
+    if (role==Qt::BackgroundRole){
+        int id_job=this->data(this->index(index.row(),0),Qt::EditRole).toInt();
+        if (notOk.contains(id_job)){
+            return QVariant(QColor(255,200,100));
+        }
+        if (index.column()==6 && id_brig>0){
+            return QVariant(QColor(255,255,175));
+        }
+    }
+    return DbTableModel::data(index,role);
 }
 
 void ModelJob::refresh(QDate beg, QDate end, QString zon, int id_rb, bool zero, QString parti)
 {
+    dbeg=beg;
+    dend=end;
     QString flt = QString("rab_job.dat between '%1' and '%2' and rab_liter.zon in %3").arg(beg.toString("yyyy-MM-dd")).arg(end.toString("yyyy-MM-dd")).arg(zon);
     if (id_rb>0){
+        id_brig=-1;
         flt+=QString(" and (rab_job.id_rb = %1 or exists (select rab_share.id from rab_share where rab_share.id_job=rab_job.id and rab_share.id_rab = %1))").arg(id_rb);
     }
     if (zero){
@@ -135,9 +163,9 @@ void ModelJob::refresh(QDate beg, QDate end, QString zon, int id_rb, bool zero, 
     if (!parti.isEmpty()){
         flt+=QString(" and rab_job.parti LIKE '%1%'").arg(parti);
     }
-    /*if (id_brig>0){
-        flt+=QString(" and rab_job.id_rb = %1").arg(id_rb);
-    }*/
+    if (id_brig>0){
+        flt+=QString(" and rab_job.id_rb = %1").arg(id_brig);
+    }
     setFilter(flt);
     setSort("rab_job.dat, rab_job.id");
     setDefaultValue(2,end);
@@ -158,6 +186,27 @@ void ModelJob::setIdBrig(int id)
 int ModelJob::getIdBrig()
 {
     return id_brig;
+}
+
+void ModelJob::refreshState()
+{
+    QString query=QString("select rj.id from rab_job rj "
+                          "inner join rab_nams rn on rn.lid = rj.lid "
+                          "inner join rab_liter rl on rl.id = rn.id "
+                          "where rl.is_nrm=true and rj.dat between '%1' and '%2' "
+                          "and get_norm_el(rj.id,rj.chas_sm) is null").arg(dbeg.toString("yyyy-MM-dd")).arg(dend.toString("yyyy-MM-dd"));
+    executorSt->setQuery(query);
+    executorSt->start();
+}
+
+void ModelJob::stFinished()
+{
+    QVector<QVector<QVariant>> data = executorSt->getData();
+    notOk.clear();
+    for (QVector<QVariant> row : data){
+        notOk.insert(row.at(0).toInt());
+    }
+    emit dataChanged(this->index(0,0),this->index(this->rowCount()-1,this->columnCount()-1));
 }
 
 ModelShare::ModelShare(QWidget *parent): DbTableModel("rab_share",parent)
