@@ -322,7 +322,7 @@ void FormCalcWage::updTitle()
             sign=query.value(1).toString();
         }
     } else {
-        QMessageBox::critical(NULL,"Error",query.lastError().text(),QMessageBox::Cancel);
+        QMessageBox::critical(this,"Error",query.lastError().text(),QMessageBox::Cancel);
     }
 }
 

@@ -39,6 +39,8 @@ class ModelShare : public DbTableModel
 public:
     explicit ModelShare(QWidget *parent = nullptr);
     void refresh(int id_job);
+    void insShare();
+
 };
 
 class FormJob : public QWidget
@@ -55,6 +57,8 @@ private:
     ModelJob *modelJob;
     ModelShare *modelShare;
     bool updTempTables();
+protected:
+    virtual void keyPressEvent (QKeyEvent * e );
 
 private slots:
     void upd();

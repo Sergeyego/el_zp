@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>969</width>
-    <height>608</height>
+    <width>967</width>
+    <height>606</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -127,10 +127,21 @@
        </property>
       </spacer>
      </item>
+     <item>
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>F12 - Выполнение работ</string>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
-    <widget class="DbViewer" name="tableViewJob"/>
+    <widget class="DbViewer" name="tableViewJob">
+     <property name="selectionMode">
+      <enum>QAbstractItemView::ExtendedSelection</enum>
+     </property>
+    </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">

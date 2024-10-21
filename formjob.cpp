@@ -73,6 +73,69 @@ bool FormJob::updTempTables()
     return ok;
 }
 
+void FormJob::keyPressEvent(QKeyEvent *e)
+{
+    switch (e->key()){
+    case Qt::Key_F12:
+    {
+        modelShare->insShare();
+        break;
+    }
+    case Qt::Key_F4:
+    {
+        ui->tableViewJob->setFocus();
+        break;
+    }
+    case Qt::Key_F5:
+    {
+        ui->tableViewShare->setFocus();
+        break;
+    }
+    case Qt::Key_F6:
+    {
+        ui->tableViewZon->setFocus();
+        break;
+    }
+    case Qt::Key_F7:
+    {
+        QModelIndex curInd = ui->tableViewJob->currentIndex();
+        if (curInd.row()>0){
+            //ui->tableViewJob->setCurrentIndex(ui->tableViewJob->model()->index(curInd.row()-1,curInd.column()));
+            ui->tableViewJob->selectRow(curInd.row()-1);
+            if (ui->tableViewShare->model()->rowCount()){
+                ui->tableViewShare->setCurrentIndex(ui->tableViewShare->model()->index(0,2));
+            }
+            ui->tableViewShare->setFocus();
+        }
+        break;
+    }
+    case Qt::Key_F8:
+    {
+        QModelIndex curInd = ui->tableViewJob->currentIndex();
+        if (curInd.row()<ui->tableViewJob->model()->rowCount()-1){
+            //ui->tableViewJob->setCurrentIndex(ui->tableViewJob->model()->index(curInd.row()+1,curInd.column()));
+            ui->tableViewJob->selectRow(curInd.row()+1);
+            if (ui->tableViewShare->model()->rowCount()){
+                ui->tableViewShare->setCurrentIndex(ui->tableViewShare->model()->index(0,2));
+            }
+            ui->tableViewShare->setFocus();
+        }
+        break;
+    }
+    /*case Qt::Key_Tab:
+    {
+
+        break;
+    }
+    default:
+    {
+        QWidget::keyPressEvent(e);
+        break;
+    }*/
+    }
+    QWidget::keyPressEvent(e);
+}
+
 void FormJob::upd()
 {
     if (sender()==ui->pushButtonUpd){
@@ -116,7 +179,7 @@ ModelJob::ModelJob(QWidget *parent) : DbTableModel("rab_job",parent)
     executorSt = new Executor(this);
     id_brig=-1;
     addColumn("id",tr("id"));
-    addColumn("lid",tr("Наименование работы"),Rels::instance()->relJobNam);
+    addColumn("lid",tr("Наименование работы (F4)"),Rels::instance()->relJobNam);
     addColumn("dat",tr("Дата уч."));
     addColumn("datf",tr("Дата факт."));
     addColumn("kvo",tr("Объем"));
@@ -213,7 +276,7 @@ ModelShare::ModelShare(QWidget *parent): DbTableModel("rab_share",parent)
 {
     addColumn("id",tr("id"));
     addColumn("id_job",tr("id_job"));
-    addColumn("id_rab",tr("Работник"),Rels::instance()->relRab);
+    addColumn("id_rab",tr("Работник (F5)"),Rels::instance()->relRab);
     addColumn("koef_prem_kvo",tr("К.прем"));
     addColumn("kvo",tr("Выполн."));
     addColumn("s_koef",tr("Коэфф"));
@@ -233,4 +296,17 @@ void ModelShare::refresh(int id_job)
     setDefaultValue(1,id_job);
     setFilter("rab_share.id_job = "+QString::number(id_job));
     select();
+}
+
+void ModelShare::insShare()
+{
+    int id_job=this->defaultValue(1).toInt();
+    QSqlQuery query;
+    query.prepare("insert into rab_share (id_job, id_rab) values (:id_job, (select id_rb from rab_job where id = :id_job))");
+    query.bindValue(":id_job",id_job);
+    if (query.exec()){
+        select();
+    } else {
+        QMessageBox::critical(nullptr,"Error",query.lastError().text(),QMessageBox::Cancel);
+    }
 }
