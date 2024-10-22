@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>967</width>
-    <height>606</height>
+    <width>965</width>
+    <height>604</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -139,7 +139,10 @@
    <item>
     <widget class="DbViewer" name="tableViewJob">
      <property name="selectionMode">
-      <enum>QAbstractItemView::ExtendedSelection</enum>
+      <enum>QAbstractItemView::ContiguousSelection</enum>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectItems</enum>
      </property>
     </widget>
    </item>
@@ -148,7 +151,7 @@
      <item>
       <widget class="QPushButton" name="pushButtonOst">
        <property name="text">
-        <string>Переходящие остатки</string>
+        <string>Переходящие остатки (Shift + F4)</string>
        </property>
       </widget>
      </item>
@@ -243,14 +246,14 @@
        <item>
         <widget class="QPushButton" name="pushButtonCopy">
          <property name="text">
-          <string>F1 Коп.</string>
+          <string>Shift + F1 Коп.</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="pushButtonPaste">
          <property name="text">
-          <string>F2 Встав.</string>
+          <string>Shift + F2 Встав.</string>
          </property>
         </widget>
        </item>

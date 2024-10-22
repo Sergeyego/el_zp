@@ -6,6 +6,7 @@
 #include "db/dbtablemodel.h"
 #include "rels.h"
 #include "db/executor.h"
+#include "dialogsplit.h"
 
 namespace Ui {
 class FormJob;
@@ -21,6 +22,7 @@ public:
     void refresh(QDate beg, QDate end, QString zon, int id_rb=-1, bool zero=false, QString parti="");
     void setIdBrig(int id);
     int getIdBrig();
+
 private:
     Executor *executorSt;
     int id_brig;
@@ -39,8 +41,14 @@ class ModelShare : public DbTableModel
 public:
     explicit ModelShare(QWidget *parent = nullptr);
     void refresh(int id_job);
-    void insShare();
 
+private:
+    int idCopy;
+
+public slots:
+    void insShare();
+    void copy();
+    void paste();
 };
 
 class FormJob : public QWidget
@@ -57,6 +65,7 @@ private:
     ModelJob *modelJob;
     ModelShare *modelShare;
     bool updTempTables();
+
 protected:
     virtual void keyPressEvent (QKeyEvent * e );
 
@@ -64,6 +73,9 @@ private slots:
     void upd();
     void updShare(QModelIndex ind);
     void chkRab(int row);
+    void upJob();
+    void downJob();
+    void split();
 };
 
 #endif // FORMJOB_H

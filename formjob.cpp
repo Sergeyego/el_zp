@@ -52,6 +52,11 @@ FormJob::FormJob(QWidget *parent) :
     connect(ui->toolButtonPart,SIGNAL(clicked(bool)),ui->lineEditPart,SLOT(clear()));
 
     connect(ui->tableViewJob->horizontalHeader(),SIGNAL(sectionClicked(int)),this,SLOT(chkRab(int)));
+    connect(ui->toolButtonUp,SIGNAL(clicked(bool)),this,SLOT(upJob()));
+    connect(ui->toolButtonDown,SIGNAL(clicked(bool)),this,SLOT(downJob()));
+    connect(ui->pushButtonCopy,SIGNAL(clicked(bool)),modelShare,SLOT(copy()));
+    connect(ui->pushButtonPaste,SIGNAL(clicked(bool)),modelShare,SLOT(paste()));
+    connect(ui->pushButtonOst,SIGNAL(clicked(bool)),this,SLOT(split()));
 
     upd();
 }
@@ -76,62 +81,38 @@ bool FormJob::updTempTables()
 void FormJob::keyPressEvent(QKeyEvent *e)
 {
     switch (e->key()){
-    case Qt::Key_F12:
-    {
-        modelShare->insShare();
+    case Qt::Key_F1:
+        if (e->modifiers()==Qt::ShiftModifier){
+            modelShare->copy();
+        }
         break;
-    }
+    case Qt::Key_F2:
+        if (e->modifiers()==Qt::ShiftModifier){
+            modelShare->paste();
+        }
+        break;
     case Qt::Key_F4:
-    {
-        ui->tableViewJob->setFocus();
+        if (e->modifiers()==Qt::ShiftModifier){
+            split();
+        } else {
+            ui->tableViewJob->setFocus();
+        }
         break;
-    }
     case Qt::Key_F5:
-    {
         ui->tableViewShare->setFocus();
         break;
-    }
     case Qt::Key_F6:
-    {
         ui->tableViewZon->setFocus();
         break;
-    }
     case Qt::Key_F7:
-    {
-        QModelIndex curInd = ui->tableViewJob->currentIndex();
-        if (curInd.row()>0){
-            //ui->tableViewJob->setCurrentIndex(ui->tableViewJob->model()->index(curInd.row()-1,curInd.column()));
-            ui->tableViewJob->selectRow(curInd.row()-1);
-            if (ui->tableViewShare->model()->rowCount()){
-                ui->tableViewShare->setCurrentIndex(ui->tableViewShare->model()->index(0,2));
-            }
-            ui->tableViewShare->setFocus();
-        }
+        upJob();
         break;
-    }
     case Qt::Key_F8:
-    {
-        QModelIndex curInd = ui->tableViewJob->currentIndex();
-        if (curInd.row()<ui->tableViewJob->model()->rowCount()-1){
-            //ui->tableViewJob->setCurrentIndex(ui->tableViewJob->model()->index(curInd.row()+1,curInd.column()));
-            ui->tableViewJob->selectRow(curInd.row()+1);
-            if (ui->tableViewShare->model()->rowCount()){
-                ui->tableViewShare->setCurrentIndex(ui->tableViewShare->model()->index(0,2));
-            }
-            ui->tableViewShare->setFocus();
-        }
+        downJob();
         break;
-    }
-    /*case Qt::Key_Tab:
-    {
-
+    case Qt::Key_F12:
+        modelShare->insShare();
         break;
-    }
-    default:
-    {
-        QWidget::keyPressEvent(e);
-        break;
-    }*/
     }
     QWidget::keyPressEvent(e);
 }
@@ -171,6 +152,39 @@ void FormJob::chkRab(int row)
         } else {
             upd();
         }
+    }
+}
+
+void FormJob::upJob()
+{
+    QModelIndex curInd = ui->tableViewJob->currentIndex();
+    if (curInd.row()>0){
+        ui->tableViewJob->selectRow(curInd.row()-1);
+        if (ui->tableViewShare->model()->rowCount()){
+            ui->tableViewShare->setCurrentIndex(ui->tableViewShare->model()->index(0,2));
+        }
+        ui->tableViewShare->setFocus();
+    }
+}
+
+void FormJob::downJob()
+{
+    QModelIndex curInd = ui->tableViewJob->currentIndex();
+    if (curInd.row()<ui->tableViewJob->model()->rowCount()-1){
+        ui->tableViewJob->selectRow(curInd.row()+1);
+        if (ui->tableViewShare->model()->rowCount()){
+            ui->tableViewShare->setCurrentIndex(ui->tableViewShare->model()->index(0,2));
+        }
+        ui->tableViewShare->setFocus();
+    }
+}
+
+void FormJob::split()
+{
+    int id_job=ui->tableViewJob->model()->data(ui->tableViewJob->model()->index(ui->tableViewJob->currentIndex().row(),0),Qt::EditRole).toInt();
+    DialogSplit d(id_job);
+    if (d.exec()==QDialog::Accepted){
+        modelJob->select();
     }
 }
 
@@ -221,7 +235,7 @@ void ModelJob::refresh(QDate beg, QDate end, QString zon, int id_rb, bool zero, 
         flt+=QString(" and (rab_job.id_rb = %1 or exists (select rab_share.id from rab_share where rab_share.id_job=rab_job.id and rab_share.id_rab = %1))").arg(id_rb);
     }
     if (zero){
-        flt+=" and rab_job.kvo = 0.0";
+        flt+=" and (rab_job.kvo = 0.0 or coalesce((select min(rab_share.kvo) from rab_share where rab_share.id_job=rab_job.id),0.0) = 0.0)";
     }
     if (!parti.isEmpty()){
         flt+=QString(" and rab_job.parti LIKE '%1%'").arg(parti);
@@ -274,6 +288,7 @@ void ModelJob::stFinished()
 
 ModelShare::ModelShare(QWidget *parent): DbTableModel("rab_share",parent)
 {
+    idCopy=-1;
     addColumn("id",tr("id"));
     addColumn("id_job",tr("id_job"));
     addColumn("id_rab",tr("Работник (F5)"),Rels::instance()->relRab);
@@ -308,5 +323,26 @@ void ModelShare::insShare()
         select();
     } else {
         QMessageBox::critical(nullptr,"Error",query.lastError().text(),QMessageBox::Cancel);
+    }
+}
+
+void ModelShare::copy()
+{
+    idCopy=this->defaultValue(1).toInt();
+}
+
+void ModelShare::paste()
+{
+    if (idCopy>0){
+        int id_job=this->defaultValue(1).toInt();
+        QSqlQuery query;
+        query.prepare("insert into rab_share (id_job, id_rab, koef_prem_kvo, kvo, s_koef, prem) (select :id_job, id_rab, koef_prem_kvo, kvo, s_koef, prem from rab_share where id_job = :id_copy)");
+        query.bindValue(":id_job",id_job);
+        query.bindValue(":id_copy",idCopy);
+        if (query.exec()){
+            select();
+        } else {
+            QMessageBox::critical(nullptr,"Error",query.lastError().text(),QMessageBox::Cancel);
+        }
     }
 }

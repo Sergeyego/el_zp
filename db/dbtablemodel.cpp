@@ -726,6 +726,7 @@ QVector<colVal> DataEditor::newRow()
 DbSqlRelation::DbSqlRelation(QString tableRel, QString cKey, QString cDisplay, QObject *parent) : table(tableRel), key(cKey), display(cDisplay), QObject(parent)
 {
     editable=false;
+    asyncSearch=true;
     alias=table;
     filterColumn=display;
     sort=getCDisplay();
@@ -768,6 +769,11 @@ QString DbSqlRelation::getFilter()
 QString DbSqlRelation::getCurrentFilterRegExp()
 {
     return currentFilterRegExp;
+}
+
+bool DbSqlRelation::getAsyncSearch()
+{
+    return asyncSearch;
 }
 
 QString DbSqlRelation::joinStr(QString tablename, QString tablecol)
@@ -822,6 +828,11 @@ void DbSqlRelation::setFilterColumn(QString c)
 void DbSqlRelation::setEditable(bool b)
 {
     editable=b;
+}
+
+void DbSqlRelation::setAsyncSearch(bool b)
+{
+    asyncSearch=b;
 }
 
 bool DbSqlRelation::isEditable()

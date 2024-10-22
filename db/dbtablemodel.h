@@ -61,6 +61,7 @@ public:
     QString getSort();
     QString getFilter();
     QString getCurrentFilterRegExp();
+    bool getAsyncSearch();
     QString joinStr(QString tablename, QString tablecol);
     QString getDisplayValue(QVariant key, QString column=QString());
     DbSqlLikeModel *model();
@@ -69,6 +70,7 @@ public:
     void setFilter(QString f);
     void setFilterColumn(QString c);
     void setEditable(bool b);
+    void setAsyncSearch(bool b);
     bool isEditable();
     bool isInital();
 private:
@@ -82,6 +84,7 @@ private:
     DbSqlLikeModel *limModel;
     QString currentFilterRegExp;
     bool editable;
+    bool asyncSearch;
 public slots:
     void refreshModel();
     void setFilterRegExp(QString pattern);

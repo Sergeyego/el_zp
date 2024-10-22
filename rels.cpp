@@ -48,10 +48,12 @@ Rels::Rels(QObject *parent) : QObject(parent)
     relJobNam = new DbSqlRelation("rbt_nam","lid","fnam",this);
     relJobNam->setSort("rbt_nam.fnam");
     relJobNam->model()->setAsync(false);
+    relJobNam->setAsyncSearch(false);
 
     relRab = new DbSqlRelation("rbt_lst","id","rnam",this);
     relRab->setSort("rbt_lst.rnam");
     relRab->model()->setAsync(false);
+    relRab->setAsyncSearch(false);
 
     relPress = new DbSqlRelation("pres","id","nam",this);
     relPress->setSort("pres.nam");

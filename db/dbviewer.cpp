@@ -48,8 +48,12 @@ void DbViewer::keyPressEvent(QKeyEvent *e)
     if (sqlModel && this->editTriggers()!=QAbstractItemView::NoEditTriggers){
         int c=sqlModel->rowCount();
         int row=currentIndex().row();
-
         switch (e->key()){
+            case Qt::Key_F2:
+            {
+                e->ignore();
+                break;
+            }
             case Qt::Key_Delete:
             {
                 if (e->modifiers()==Qt::ControlModifier) remove();
