@@ -31,6 +31,7 @@ SOURCES += \
     doublelineedit.cpp \
     formjob.cpp \
     formliter.cpp \
+    formnormpress.cpp \
     formpremmon.cpp \
     formrab.cpp \
     formrepmon.cpp \
@@ -64,6 +65,7 @@ HEADERS += \
     doublelineedit.h \
     formjob.h \
     formliter.h \
+    formnormpress.h \
     formpremmon.h \
     formrab.h \
     formrepmon.h \
@@ -95,6 +97,7 @@ FORMS += \
     dialogtabel.ui \
     formjob.ui \
     formliter.ui \
+    formnormpress.ui \
     formpremmon.ui \
     formrab.ui \
     formrepmon.ui \

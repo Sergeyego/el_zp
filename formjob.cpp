@@ -184,9 +184,11 @@ void FormJob::downJob()
 void FormJob::split()
 {
     int id_job=ui->tableViewJob->model()->data(ui->tableViewJob->model()->index(ui->tableViewJob->currentIndex().row(),0),Qt::EditRole).toInt();
-    DialogSplit d(id_job);
-    if (d.exec()==QDialog::Accepted){
-        modelJob->select();
+    if (id_job>0){
+        DialogSplit d(id_job);
+        if (d.exec()==QDialog::Accepted){
+            modelJob->select();
+        }
     }
 }
 
