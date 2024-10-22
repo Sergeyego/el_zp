@@ -159,7 +159,8 @@ void FormJob::upJob()
 {
     QModelIndex curInd = ui->tableViewJob->currentIndex();
     if (curInd.row()>0){
-        ui->tableViewJob->selectRow(curInd.row()-1);
+        //ui->tableViewJob->selectRow(curInd.row()-1);
+        ui->tableViewJob->setCurrentIndex(ui->tableViewJob->model()->index(curInd.row()-1,1));
         if (ui->tableViewShare->model()->rowCount()){
             ui->tableViewShare->setCurrentIndex(ui->tableViewShare->model()->index(0,2));
         }
@@ -171,7 +172,8 @@ void FormJob::downJob()
 {
     QModelIndex curInd = ui->tableViewJob->currentIndex();
     if (curInd.row()<ui->tableViewJob->model()->rowCount()-1){
-        ui->tableViewJob->selectRow(curInd.row()+1);
+        //ui->tableViewJob->selectRow(curInd.row()+1);
+        ui->tableViewJob->setCurrentIndex(ui->tableViewJob->model()->index(curInd.row()+1,1));
         if (ui->tableViewShare->model()->rowCount()){
             ui->tableViewShare->setCurrentIndex(ui->tableViewShare->model()->index(0,2));
         }

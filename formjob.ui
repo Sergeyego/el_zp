@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>965</width>
-    <height>604</height>
+    <width>963</width>
+    <height>602</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -139,7 +139,7 @@
    <item>
     <widget class="DbViewer" name="tableViewJob">
      <property name="selectionMode">
-      <enum>QAbstractItemView::ContiguousSelection</enum>
+      <enum>QAbstractItemView::SingleSelection</enum>
      </property>
      <property name="selectionBehavior">
       <enum>QAbstractItemView::SelectItems</enum>
