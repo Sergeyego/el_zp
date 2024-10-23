@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1006</width>
-    <height>682</height>
+    <width>1004</width>
+    <height>680</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,7 +35,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1006</width>
+     <width>1004</width>
      <height>25</height>
     </rect>
    </property>
@@ -65,6 +65,7 @@
     <addaction name="actionRab"/>
     <addaction name="actionLiter"/>
     <addaction name="actionTarif"/>
+    <addaction name="actionMarkType"/>
    </widget>
    <widget class="QMenu" name="menu_5">
     <property name="title">
@@ -77,6 +78,7 @@
      <string>Нормы выработки</string>
     </property>
     <addaction name="actionNormPress"/>
+    <addaction name="actionNormPack"/>
    </widget>
    <addaction name="menu_4"/>
    <addaction name="menu_5"/>
@@ -128,6 +130,16 @@
   <action name="actionNormPress">
    <property name="text">
     <string>Нормы опрессовки</string>
+   </property>
+  </action>
+  <action name="actionNormPack">
+   <property name="text">
+    <string>Нормы упаковки</string>
+   </property>
+  </action>
+  <action name="actionMarkType">
+   <property name="text">
+    <string>Типы марок</string>
    </property>
   </action>
  </widget>

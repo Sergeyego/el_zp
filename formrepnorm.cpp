@@ -9,7 +9,7 @@ FormRepNorm::FormRepNorm(QWidget *parent) :
 
     modelZon = new ModelZon(tr("Участки"),Rels::instance()->relZon->model(),false, this);
     QSet<int> set;
-    set<<2<<23;
+    set<<2<<6;
     modelZon->setSel(set);
     ui->tableViewZon->setModel(modelZon);
     ui->tableViewZon->setColumnWidth(0,270);
@@ -352,7 +352,7 @@ void FormRepNorm::saveXlsPer()
         QString smena, smena_old;
         QString line, line_old;
         QDate date, date_old;
-        int otr, otr_old;
+        int otr=0, otr_old=0;
 
         ws->setColumnWidth(1,1,16);
         ws->setColumnWidth(2,2,18);

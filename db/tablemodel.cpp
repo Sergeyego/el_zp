@@ -13,13 +13,13 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
     QVariant origData=p_d[index.row()][index.column()];
     QVariant::Type type=origData.type();
     if (role==Qt::DisplayRole){
-        if (type==QMetaType::Double){
+        if (type==QVariant::Double){
             return (origData.isNull() || origData==0) ? QString("") : QLocale().toString(origData.toDouble(),'f',mdecimal.value(index.column(),decimal));
-        } else if (type==QMetaType::QDate){
+        } else if (type==QVariant::Date){
             return (origData.isNull()) ? QString("") : origData.toDate().toString("dd.MM.yy");
         }
     } else if (role==Qt::TextAlignmentRole){
-        return (type==QMetaType::Int || type==QMetaType::Double || type==QMetaType::Float || type==QMetaType::LongLong ) ?
+        return (type==QVariant::Int || type==QVariant::Double || type==QVariant::LongLong ) ?
                     int(Qt::AlignRight | Qt::AlignVCenter) : int(Qt::AlignLeft | Qt::AlignVCenter);
     }
 

@@ -177,6 +177,7 @@ public:
     bool isAdd() const;
     bool isEdt() const;
     bool isEmpty() const;
+    bool isInsertable() const;
     virtual bool insertRow(int row, const QModelIndex &parent=QModelIndex());
     DbSqlRelation *sqlRelation(int column) const;
     QVariant::Type columnType(int column) const;
@@ -188,6 +189,7 @@ public:
     void setColumnFlags(int column, Qt::ItemFlags flags);
     QVariant defaultValue(int column) const;
     bool setDecimals(int column, int dec);
+    void setInsertable(bool b);
     QString name() const;
 
 protected:
@@ -203,6 +205,7 @@ private:
     MData *modelData;
     DataEditor *editor;
     bool block;
+    bool insertable;
     QSqlIndex pkList;
     QSqlRecord defaultRecord;
 

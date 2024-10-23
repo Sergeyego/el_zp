@@ -4,7 +4,7 @@
 #include <QWidget>
 #include "rels.h"
 #include "db/dbtablemodel.h"
-#include "modelro.h"
+#include "allpressdialog.h"
 
 namespace Ui {
 class FormNormPress;
@@ -21,13 +21,13 @@ public:
 private:
     Ui::FormNormPress *ui;
     DbTableModel *modelNorm;
-    ModelRo *modelPress;
 
 private slots:
     void updCont(QModelIndex ind);
     void updPress();
     void updMarkFinished();
-    void updModelPress();
+    void normAllPress();
+    void upd();
 };
 
 #endif // FORMNORMPRESS_H

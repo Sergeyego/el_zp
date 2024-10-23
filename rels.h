@@ -21,6 +21,8 @@ public:
     DbSqlRelation *relJobNam;
     DbSqlRelation *relRab;
     DbSqlRelation *relPress;
+    DbSqlRelation *relPressFlt;
+    DbSqlRelation *relMarkType;
 
 protected:
     explicit Rels(QObject *parent = nullptr);

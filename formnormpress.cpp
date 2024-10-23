@@ -7,9 +7,8 @@ FormNormPress::FormNormPress(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    modelPress = new ModelRo(this);
-    ui->comboBoxPress->setModel(modelPress);
-    updModelPress();
+    ui->comboBoxPress->setModel(Rels::instance()->relPressFlt->model());
+    ui->comboBoxPress->setModelColumn(1);
 
     ui->listViewMark->setModel(Rels::instance()->relMark->model());
     ui->listViewMark->setModelColumn(1);
@@ -35,6 +34,8 @@ FormNormPress::FormNormPress(QWidget *parent) :
     connect(ui->listViewMark->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(updCont(QModelIndex)));
     connect(ui->comboBoxPress,SIGNAL(currentIndexChanged(int)),this,SLOT(updPress()));
     connect(Rels::instance()->relMark->model(),SIGNAL(searchFinished(QString)),this,SLOT(updMarkFinished()));
+    connect(ui->pushButtonAll,SIGNAL(clicked(bool)),this,SLOT(normAllPress()));
+    connect(ui->pushButtonUpd,SIGNAL(clicked(bool)),this,SLOT(upd()));
 
     if (!Rels::instance()->relMark->isInital()){
         Rels::instance()->relMark->refreshModel();
@@ -71,11 +72,16 @@ void FormNormPress::updMarkFinished()
     }
 }
 
-void FormNormPress::updModelPress()
+void FormNormPress::normAllPress()
 {
-    QSqlQuery query;
-    query.prepare("select id, nam from pres where id<>0 order by nam");
-    if (modelPress->execQuery(query)){
-        ui->comboBoxPress->setModelColumn(1);
-    }
+    AllPressDialog d;
+    d.exec();
+    updPress();
+}
+
+void FormNormPress::upd()
+{
+    modelNorm->refreshRelsModel();
+    Rels::instance()->relPressFlt->refreshModel();
+    Rels::instance()->relMark->refreshModel();
 }

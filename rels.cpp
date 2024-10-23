@@ -57,5 +57,16 @@ Rels::Rels(QObject *parent) : QObject(parent)
 
     relPress = new DbSqlRelation("pres","id","nam",this);
     relPress->setSort("pres.nam");
+
+    relPressFlt = new DbSqlRelation("pres","id","nam",this);
+    relPressFlt->model()->setAsync(false);
+    relPressFlt->setFilter("pres.id<>0");
+    relPressFlt->setSort("pres.nam");
+    relPressFlt->refreshModel();
+
+    relMarkType = new DbSqlRelation("el_norm_types","id","nam",this);
+    relMarkType->model()->setAsync(false);
+    relMarkType->setEditable(true);
+    relMarkType->setSort("el_norm_types.nam");
 }
 

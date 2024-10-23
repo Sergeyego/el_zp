@@ -16,6 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
     actAction(ui->actionRepTarif,&MainWindow::newFormRepTarif);
     actAction(ui->actionJob,&MainWindow::newFormJob);
     actAction(ui->actionNormPress,&MainWindow::newFormNormPress);
+    actAction(ui->actionNormPack,&MainWindow::newFormNormPack);
+    actAction(ui->actionMarkType,&MainWindow::newFormMarkType);
 
     loadSettings();
     QObject::connect(ui->tabWidget,&QTabWidget::tabCloseRequested,this,&MainWindow::closeTab);
@@ -169,6 +171,20 @@ void MainWindow::newFormNormPress()
 {
     if (!exist(sender())){
         addSubWindow(new FormNormPress(),sender());
+    }
+}
+
+void MainWindow::newFormNormPack()
+{
+    if (!exist(sender())){
+        addSubWindow(new FormNormPack(),sender());
+    }
+}
+
+void MainWindow::newFormMarkType()
+{
+    if (!exist(sender())){
+        addSubWindow(new FormMarkType(),sender());
     }
 }
 

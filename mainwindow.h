@@ -13,6 +13,8 @@
 #include "formreptarif.h"
 #include "formjob.h"
 #include "formnormpress.h"
+#include "formnormpack.h"
+#include "formmarktype.h"
 
 namespace Ui {
 class MainWindow;
@@ -47,6 +49,8 @@ private slots:
     void newFormRepTarif();
     void newFormJob();
     void newFormNormPress();
+    void newFormNormPack();
+    void newFormMarkType();
 };
 
 #endif // MAINWINDOW_H

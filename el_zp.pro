@@ -26,11 +26,14 @@ include(xlsx/qtxlsx.pri)
 
 
 SOURCES += \
+    allpressdialog.cpp \
     dialogsplit.cpp \
     dialogtabel.cpp \
     doublelineedit.cpp \
     formjob.cpp \
     formliter.cpp \
+    formmarktype.cpp \
+    formnormpack.cpp \
     formnormpress.cpp \
     formpremmon.cpp \
     formrab.cpp \
@@ -53,18 +56,23 @@ SOURCES += \
     db/tablemodel.cpp \
     formcalcwage.cpp \
     modelzon.cpp \
+    packnormdialog.cpp \
     progressexecutor.cpp \
     progressreportdialog.cpp \
+    qdoubledelegate.cpp \
     rels.cpp \
     tableview.cpp \
     modelro.cpp
 
 HEADERS += \
+    allpressdialog.h \
     dialogsplit.h \
     dialogtabel.h \
     doublelineedit.h \
     formjob.h \
     formliter.h \
+    formmarktype.h \
+    formnormpack.h \
     formnormpress.h \
     formpremmon.h \
     formrab.h \
@@ -86,17 +94,22 @@ HEADERS += \
     db/tablemodel.h \
     formcalcwage.h \
     modelzon.h \
+    packnormdialog.h \
     progressexecutor.h \
     progressreportdialog.h \
+    qdoubledelegate.h \
     rels.h \
     tableview.h \
     modelro.h
 
 FORMS += \
+    allpressdialog.ui \
     dialogsplit.ui \
     dialogtabel.ui \
     formjob.ui \
     formliter.ui \
+    formmarktype.ui \
+    formnormpack.ui \
     formnormpress.ui \
     formpremmon.ui \
     formrab.ui \
@@ -108,6 +121,7 @@ FORMS += \
     db/dblogin.ui \
     db/dbrelationeditdialog.ui \
     formcalcwage.ui \
+    packnormdialog.ui \
     progressreportdialog.ui
 
 RC_FILE = ico.rc

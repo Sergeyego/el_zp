@@ -1,7 +1,7 @@
 #include "modelzon.h"
 
 ModelZon::ModelZon(QString name, QAbstractItemModel *srcModel, bool chkAll, QObject *parent)
-    : nam(name), QSortFilterProxyModel(parent)
+    : QSortFilterProxyModel(parent), nam(name)
 {
     is_checked=chkAll;
     checkFlg=chkAll;
