@@ -132,7 +132,9 @@ void FormJob::upd()
         ui->tableViewJob->setCurrentIndex(ui->tableViewJob->model()->index(ui->tableViewJob->model()->rowCount()-1,1));
         ui->tableViewJob->scrollToBottom();
     }
-    ui->tableViewJob->setFocus();
+    if (sender()!=ui->lineEditPart){
+        ui->tableViewJob->setFocus();
+    }
 }
 
 void FormJob::updShare(QModelIndex ind)
