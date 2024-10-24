@@ -211,7 +211,7 @@ ModelJob::ModelJob(QWidget *parent) : DbTableModel("rab_job",parent)
     addColumn("extr_time",tr("Св.ур,%"));
 
     setSuffix("left join rab_nams on rab_nams.lid = rab_job.lid left join rab_liter on rab_liter.id = rab_nams.id");
-    setDecimals(4,3);
+    setDecimals(4,4);
 
     connect(this,SIGNAL(sigRefresh()),this,SLOT(refreshState()));
     connect(this,SIGNAL(sigUpd()),this,SLOT(refreshState()));
@@ -305,7 +305,7 @@ ModelShare::ModelShare(QWidget *parent): DbTableModel("rab_share",parent)
     addColumn("prem",tr("Св.ур,%"));
     setSort("rab_share.id");
     setDecimals(3,2);
-    setDecimals(4,3);
+    setDecimals(4,4);
     setDecimals(5,2);
     setDecimals(6,1);
     setDefaultValue(3,1.0);
