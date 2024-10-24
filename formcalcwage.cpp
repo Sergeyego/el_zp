@@ -18,15 +18,15 @@ FormCalcWage::FormCalcWage(QWidget *parent) :
 
     modelTableData = new TableModel(this);
     modelTableData->setDecimal(2);
-    modelTableData->setDecimalForColumn(2,3);
-    modelTableData->setDecimalForColumn(3,3);
+    modelTableData->setDecimalForColumn(2,4);
+    modelTableData->setDecimalForColumn(3,4);
     modelTableData->setDecimalForColumn(4,1);
     modelTableData->setDecimalForColumn(5,1);
     modelTableData->setDecimalForColumn(6,1);
 
     modelTableDataVid = new TableModel(this);
     modelTableDataVid->setDecimal(2);
-    modelTableDataVid->setDecimalForColumn(1,3);
+    modelTableDataVid->setDecimalForColumn(1,4);
 
     QStringList header;
     header<<tr("Дата")<<tr("Наименование работ")<<tr("Общ.к-во")<<tr("Кол-во")<<tr("% кач.")<<tr("% норм.")<<tr("% мес.")<<tr("Тариф")<<tr("З.пл.")<<tr("Вред.")<<tr("Выход.")<<tr("Ночн.")<<tr("Прем.кач")<<tr("Прем.норм.")<<tr("Прем.мес.")<<tr("К выдаче");
@@ -700,7 +700,7 @@ void FormCalcWage::tabel()
             ws->mergeCells(CellRange(m,2,m,7),numFormat);
             ws->writeString(m,2,row[0].toString(),strFormat);
 
-            numFormat.setNumberFormat(QString("0.%1").arg((0),3,'d',0,QChar('0')));
+            numFormat.setNumberFormat(QString("0.%1").arg((0),4,'d',0,QChar('0')));
             ws->writeNumeric(m,8,row[1].toDouble(),numFormat);
 
             ws->writeString(m,9,row[2].toString(),strFormat);
