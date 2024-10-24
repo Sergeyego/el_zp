@@ -132,7 +132,7 @@ void FormJob::upd()
         ui->tableViewJob->setCurrentIndex(ui->tableViewJob->model()->index(ui->tableViewJob->model()->rowCount()-1,1));
         ui->tableViewJob->scrollToBottom();
     }
-
+    ui->tableViewJob->setFocus();
 }
 
 void FormJob::updShare(QModelIndex ind)
@@ -144,6 +144,7 @@ void FormJob::updShare(QModelIndex ind)
 void FormJob::chkRab(int row)
 {
     if (row==6){
+        modelJob->submit();
         int id_brig = modelJob->getIdBrig()>0 ? -1 : ui->tableViewJob->model()->data(ui->tableViewJob->model()->index(ui->tableViewJob->currentIndex().row(),6),Qt::EditRole).toInt();
         modelJob->setIdBrig(id_brig);
         if (id_brig>0 && ui->checkBoxRab->isChecked()){
