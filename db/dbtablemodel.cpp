@@ -919,6 +919,7 @@ void DbSqlLikeModel::startSearch(QString s)
     QString flt;
     QString pattern = s;
     pattern.replace("'","''");
+    pattern.replace("/","//");
     pattern.replace("%","/%");
     pattern.replace("_","/_");
 
