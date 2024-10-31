@@ -24,14 +24,17 @@ public:
     int getIdBrig();
 
 private:
-    Executor *executorSt;
+    Executor *executorNorm;
+    Executor *executorPart;
     int id_brig;
     QDate dbeg, dend;
-    QSet<int> notOk;
+    QSet<int> notOkNorm;
+    QSet<int> notOkPart;
 
 private slots:
     void refreshState();
-    void stFinished();
+    void stNormFinished();
+    void stPartFinished();
 };
 
 class ModelShare : public DbTableModel

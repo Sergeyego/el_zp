@@ -23,11 +23,11 @@ FormJob::FormJob(QWidget *parent) :
     ui->tableViewJob->setColumnWidth(1,400);
     ui->tableViewJob->setColumnWidth(2,80);
     ui->tableViewJob->setColumnWidth(3,80);
-    ui->tableViewJob->setColumnWidth(4,70);
+    ui->tableViewJob->setColumnWidth(4,80);
     ui->tableViewJob->setColumnWidth(5,300);
     ui->tableViewJob->setColumnWidth(6,300);
-    ui->tableViewJob->setColumnWidth(7,150);
-    ui->tableViewJob->setColumnWidth(8,60);
+    ui->tableViewJob->setColumnWidth(7,140);
+    ui->tableViewJob->setColumnWidth(8,50);
     ui->tableViewJob->setColumnWidth(9,60);
 
     modelShare = new ModelShare(this);
@@ -197,7 +197,8 @@ void FormJob::split()
 
 ModelJob::ModelJob(QWidget *parent) : DbTableModel("rab_job",parent)
 {
-    executorSt = new Executor(this);
+    executorNorm = new Executor(this);
+    executorPart = new Executor(this);
     id_brig=-1;
     addColumn("id",tr("id"));
     addColumn("lid",tr("Наименование работы (F4)"),Rels::instance()->relJobNam);
@@ -209,22 +210,24 @@ ModelJob::ModelJob(QWidget *parent) : DbTableModel("rab_job",parent)
     addColumn("id_press",tr("Пресс"),Rels::instance()->relPress);
     addColumn("chas_sm",tr("ч/см"));
     addColumn("extr_time",tr("Св.ур,%"));
-    //addColumn("parti",tr("Партия"));
 
     setSuffix("left join rab_nams on rab_nams.lid = rab_job.lid left join rab_liter on rab_liter.id = rab_nams.id");
     setDecimals(4,4);
 
     connect(this,SIGNAL(sigRefresh()),this,SLOT(refreshState()));
     connect(this,SIGNAL(sigUpd()),this,SLOT(refreshState()));
-    connect(executorSt,SIGNAL(finished()),this,SLOT(stFinished()));
+    connect(executorNorm,SIGNAL(finished()),this,SLOT(stNormFinished()));
+    connect(executorPart,SIGNAL(finished()),this,SLOT(stPartFinished()));
 }
 
 QVariant ModelJob::data(const QModelIndex &index, int role) const
 {
     if (role==Qt::BackgroundRole){
         int id_job=this->data(this->index(index.row(),0),Qt::EditRole).toInt();
-        if (notOk.contains(id_job)){
+        if (notOkNorm.contains(id_job)){
             return QVariant(QColor(255,200,100));
+        } else if (notOkPart.contains(id_job)){
+            return QVariant(QColor(255,170,170));
         }
         if (index.column()==6 && id_brig>0){
             return QVariant(QColor(255,255,175));
@@ -275,21 +278,39 @@ int ModelJob::getIdBrig()
 
 void ModelJob::refreshState()
 {
-    QString query=QString("select rj.id from rab_job rj "
+    QString queryNorm=QString("select rj.id from rab_job rj "
                           "inner join rab_nams rn on rn.lid = rj.lid "
                           "inner join rab_liter rl on rl.id = rn.id "
                           "where rl.is_nrm=true and rj.dat between '%1' and '%2' "
                           "and get_norm_el(rj.id,rj.chas_sm) is null").arg(dbeg.toString("yyyy-MM-dd")).arg(dend.toString("yyyy-MM-dd"));
-    executorSt->setQuery(query);
-    executorSt->start();
+    executorNorm->setQuery(queryNorm);
+    executorNorm->start();
+
+    QString queryPart=QString("select rj.id from rab_job rj "
+                              "inner join rab_nams rn on rn.lid = rj.lid "
+                              "inner join parti p on p.id = rj.id_part "
+                              "where rj.dat between '%1' and '%2' and "
+                              "(rn.dim >0 and (rn.id_el<>p.id_el or rn.dim<>p.diam) or (rn.dim=0 and rn.id_el<>p.id_el))").arg(dbeg.toString("yyyy-MM-dd")).arg(dend.toString("yyyy-MM-dd"));
+    executorPart->setQuery(queryPart);
+    executorPart->start();
 }
 
-void ModelJob::stFinished()
+void ModelJob::stPartFinished()
 {
-    QVector<QVector<QVariant>> data = executorSt->getData();
-    notOk.clear();
+    QVector<QVector<QVariant>> data = executorPart->getData();
+    notOkPart.clear();
     for (QVector<QVariant> row : data){
-        notOk.insert(row.at(0).toInt());
+        notOkPart.insert(row.at(0).toInt());
+    }
+    emit dataChanged(this->index(0,0),this->index(this->rowCount()-1,this->columnCount()-1));
+}
+
+void ModelJob::stNormFinished()
+{
+    QVector<QVector<QVariant>> data = executorNorm->getData();
+    notOkNorm.clear();
+    for (QVector<QVariant> row : data){
+        notOkNorm.insert(row.at(0).toInt());
     }
     emit dataChanged(this->index(0,0),this->index(this->rowCount()-1,this->columnCount()-1));
 }
