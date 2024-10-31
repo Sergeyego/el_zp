@@ -23,6 +23,7 @@ public:
     DbSqlRelation *relPress;
     DbSqlRelation *relPressFlt;
     DbSqlRelation *relMarkType;
+    DbSqlRelation *relElPart;
 
 protected:
     explicit Rels(QObject *parent = nullptr);

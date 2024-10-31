@@ -24,7 +24,7 @@ FormJob::FormJob(QWidget *parent) :
     ui->tableViewJob->setColumnWidth(2,80);
     ui->tableViewJob->setColumnWidth(3,80);
     ui->tableViewJob->setColumnWidth(4,70);
-    ui->tableViewJob->setColumnWidth(5,70);
+    ui->tableViewJob->setColumnWidth(5,300);
     ui->tableViewJob->setColumnWidth(6,300);
     ui->tableViewJob->setColumnWidth(7,150);
     ui->tableViewJob->setColumnWidth(8,60);
@@ -204,11 +204,12 @@ ModelJob::ModelJob(QWidget *parent) : DbTableModel("rab_job",parent)
     addColumn("dat",tr("Дата уч."));
     addColumn("datf",tr("Дата факт."));
     addColumn("kvo",tr("Объем"));
-    addColumn("parti",tr("Партия"));
+    addColumn("id_part",tr("Партия"),Rels::instance()->relElPart);
     addColumn("id_rb",tr("Бригадир"),Rels::instance()->relRab);
     addColumn("id_press",tr("Пресс"),Rels::instance()->relPress);
     addColumn("chas_sm",tr("ч/см"));
     addColumn("extr_time",tr("Св.ур,%"));
+    //addColumn("parti",tr("Партия"));
 
     setSuffix("left join rab_nams on rab_nams.lid = rab_job.lid left join rab_liter on rab_liter.id = rab_nams.id");
     setDecimals(4,4);
