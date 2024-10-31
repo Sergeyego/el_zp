@@ -211,7 +211,7 @@ ModelJob::ModelJob(QWidget *parent) : DbTableModel("rab_job",parent)
     addColumn("chas_sm",tr("ч/см"));
     addColumn("extr_time",tr("Св.ур,%"));
 
-    setSuffix("left join rab_nams on rab_nams.lid = rab_job.lid left join rab_liter on rab_liter.id = rab_nams.id");
+    setSuffix("left join rab_nams on rab_nams.lid = rab_job.lid left join rab_liter on rab_liter.id = rab_nams.id left join parti as p on p.id = rab_job.id_part");
     setDecimals(4,4);
 
     connect(this,SIGNAL(sigRefresh()),this,SLOT(refreshState()));
@@ -249,7 +249,7 @@ void ModelJob::refresh(QDate beg, QDate end, QString zon, int id_rb, bool zero, 
         flt+=" and (rab_job.kvo = 0.0 or coalesce((select min(rab_share.kvo) from rab_share where rab_share.id_job=rab_job.id),0.0) = 0.0)";
     }
     if (!parti.isEmpty()){
-        flt+=QString(" and rab_job.parti LIKE '%1%'").arg(parti);
+        flt+=QString(" and p.n_s ILIKE '%1%'").arg(parti);
     }
     if (id_brig>0){
         flt+=QString(" and rab_job.id_rb = %1").arg(id_brig);

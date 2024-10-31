@@ -70,8 +70,9 @@ Rels::Rels(QObject *parent) : QObject(parent)
     relMarkType->setSort("el_norm_types.nam");
 
     relElPart = new DbSqlRelation("parti","id","str",this);
-    relElPart->setSort("parti.dat_part desc, parti.n_s desc");
-    relElPart->setFilter("parti.id<>0");
+    relElPart->setAlias("eparti");
+    relElPart->setSort("eparti.dat_part desc, eparti.n_s desc");
+    relElPart->setFilter("eparti.id<>0");
     relElPart->model()->setLimit(4000);
 }
 
