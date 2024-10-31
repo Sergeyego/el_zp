@@ -41,10 +41,10 @@ void DialogSplit::insNew()
     QSqlQuery query;
     query.prepare("insert into rab_job (id_norm, dat, datf, kvo, prem, prim, id_rb, parti, kvo_fact, id_rcp, kfmp, le, lo, id_prov, id_gl, "
                   "liq_glass, dry_rst, lid, kvo_break, press, dens, visc, hmdt, smena, chas_sm, id_prov_part, id_gl_part, prem_nrm, extr_time, "
-                  "kvo_break_on_up, kvo_break_on_dry, id_press, id_rub ) "
+                  "kvo_break_on_up, kvo_break_on_dry, id_press, id_rub, id_part ) "
                   "(select id_norm, dat, datf, kvo, prem, prim, id_rb, parti, kvo_fact, id_rcp, kfmp, le, lo, id_prov, id_gl, "
                   "liq_glass, dry_rst, lid, kvo_break, press, dens, visc, hmdt, smena, chas_sm, id_prov_part, id_gl_part, prem_nrm, extr_time, "
-                  "kvo_break_on_up, kvo_break_on_dry, id_press, id_rub from rab_job where id = :id) returning id");
+                  "kvo_break_on_up, kvo_break_on_dry, id_press, id_rub, id_part from rab_job where id = :id) returning id");
     query.bindValue(":id",id_job);
     if (query.exec()){
         if (query.next()){

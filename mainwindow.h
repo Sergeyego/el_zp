@@ -15,6 +15,7 @@
 #include "formnormpress.h"
 #include "formnormpack.h"
 #include "formmarktype.h"
+#include "formcompare.h"
 
 namespace Ui {
 class MainWindow;
@@ -51,6 +52,7 @@ private slots:
     void newFormNormPress();
     void newFormNormPack();
     void newFormMarkType();
+    void newFormCompare();
 };
 
 #endif // MAINWINDOW_H

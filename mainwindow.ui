@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1004</width>
-    <height>680</height>
+    <width>1002</width>
+    <height>678</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,7 +35,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1004</width>
+     <width>1002</width>
      <height>25</height>
     </rect>
    </property>
@@ -57,6 +57,7 @@
     </property>
     <addaction name="actionRepNorm"/>
     <addaction name="actionRepTarif"/>
+    <addaction name="actionCompare"/>
    </widget>
    <widget class="QMenu" name="menu_4">
     <property name="title">
@@ -140,6 +141,11 @@
   <action name="actionMarkType">
    <property name="text">
     <string>Типы марок</string>
+   </property>
+  </action>
+  <action name="actionCompare">
+   <property name="text">
+    <string>Сравнение данных по упаковке</string>
    </property>
   </action>
  </widget>

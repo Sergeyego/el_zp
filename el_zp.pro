@@ -30,6 +30,7 @@ SOURCES += \
     dialogsplit.cpp \
     dialogtabel.cpp \
     doublelineedit.cpp \
+    formcompare.cpp \
     formjob.cpp \
     formliter.cpp \
     formmarktype.cpp \
@@ -69,6 +70,7 @@ HEADERS += \
     dialogsplit.h \
     dialogtabel.h \
     doublelineedit.h \
+    formcompare.h \
     formjob.h \
     formliter.h \
     formmarktype.h \
@@ -106,6 +108,7 @@ FORMS += \
     allpressdialog.ui \
     dialogsplit.ui \
     dialogtabel.ui \
+    formcompare.ui \
     formjob.ui \
     formliter.ui \
     formmarktype.ui \

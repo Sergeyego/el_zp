@@ -210,6 +210,7 @@ ModelJob::ModelJob(QWidget *parent) : DbTableModel("rab_job",parent)
     addColumn("id_press",tr("Пресс"),Rels::instance()->relPress);
     addColumn("chas_sm",tr("ч/см"));
     addColumn("extr_time",tr("Св.ур,%"));
+    addColumn("parti",tr("Партия"));
 
     setSuffix("left join rab_nams on rab_nams.lid = rab_job.lid left join rab_liter on rab_liter.id = rab_nams.id left join parti as p on p.id = rab_job.id_part");
     setDecimals(4,4);
