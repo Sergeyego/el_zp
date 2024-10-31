@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>769</width>
-    <height>611</height>
+    <width>767</width>
+    <height>609</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -102,7 +102,7 @@
        <item>
         <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>Нормы для марки</string>
+          <string>Нормы для марки за 11 часов</string>
          </property>
         </widget>
        </item>

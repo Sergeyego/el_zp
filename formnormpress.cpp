@@ -18,10 +18,9 @@ FormNormPress::FormNormPress(QWidget *parent) :
     modelNorm->addColumn("id_pr","id_pr");
     modelNorm->addColumn("dat_nrm",tr("Дата"));
     modelNorm->addColumn("id_dim",tr("Диаметр"),Rels::instance()->relDiam);
-    modelNorm->addColumn("chas",tr("Часы"));
     modelNorm->addColumn("norm",tr("Норма, т"));
     modelNorm->setSort("norm_smen.dat_nrm, diam.diam");
-    modelNorm->setDecimals(5,3);
+    modelNorm->setDecimals(4,3);
     modelNorm->setDefaultValue(2,QDate(QDate::currentDate().year(),QDate::currentDate().month(),1));
     ui->tableViewNorm->setModel(modelNorm);
     ui->tableViewNorm->setColumnHidden(0,true);
@@ -29,7 +28,6 @@ FormNormPress::FormNormPress(QWidget *parent) :
     ui->tableViewNorm->setColumnWidth(2,80);
     ui->tableViewNorm->setColumnWidth(3,80);
     ui->tableViewNorm->setColumnWidth(4,80);
-    ui->tableViewNorm->setColumnWidth(5,80);
 
     connect(ui->listViewMark->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(updCont(QModelIndex)));
     connect(ui->comboBoxPress,SIGNAL(currentIndexChanged(int)),this,SLOT(updPress()));
@@ -53,7 +51,7 @@ void FormNormPress::updCont(QModelIndex ind)
 {
     int id_el=ui->listViewMark->model()->data(ui->listViewMark->model()->index(ind.row(),0),Qt::EditRole).toInt();
     int id_pr=ui->comboBoxPress->model()->data(ui->comboBoxPress->model()->index(ui->comboBoxPress->currentIndex(),0),Qt::EditRole).toInt();
-    modelNorm->setFilter("norm_smen.id_pr = "+QString::number(id_pr)+" and norm_smen.id_el = "+QString::number(id_el));
+    modelNorm->setFilter("norm_smen.chas = 11 and norm_smen.id_pr = "+QString::number(id_pr)+" and norm_smen.id_el = "+QString::number(id_el));
     modelNorm->setDefaultValue(0,id_el);
     modelNorm->setDefaultValue(1,id_pr);
     modelNorm->select();
