@@ -4,6 +4,8 @@
 #include <QWidget>
 #include "db/tablemodel.h"
 #include <QSqlQuery>
+#include <QSqlRecord>
+#include <QSqlError>
 
 namespace Ui {
 class FormCompare;
@@ -15,6 +17,7 @@ class ModelCompare : public TableModel
 
 public:
     explicit ModelCompare(QWidget *parent = nullptr);
+    QVariant data(const QModelIndex &index, int role) const;
     void refresh(QDate beg, QDate end, bool err);
 };
 
