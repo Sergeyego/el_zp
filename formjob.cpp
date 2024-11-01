@@ -95,10 +95,19 @@ void FormJob::keyPressEvent(QKeyEvent *e)
         if (e->modifiers()==Qt::ShiftModifier){
             split();
         } else {
+            modelShare->submit();
             ui->tableViewJob->setFocus();
         }
         break;
     case Qt::Key_F5:
+        if ((modelJob->isAdd() && modelJob->isEdt()) || modelJob->isEdt()){
+            QModelIndex ind=ui->tableViewJob->currentIndex();
+            modelJob->submit();
+            updShare(ind);
+        }
+        if (modelJob->isAdd()){
+            modelJob->submit();
+        }
         ui->tableViewShare->setFocus();
         break;
     case Qt::Key_F6:
@@ -111,7 +120,14 @@ void FormJob::keyPressEvent(QKeyEvent *e)
         downJob();
         break;
     case Qt::Key_F12:
-        modelShare->insShare();
+        if ((modelJob->isAdd() && modelJob->isEdt()) || modelJob->isEdt()){
+            QModelIndex ind=ui->tableViewJob->currentIndex();
+            modelJob->submit();
+            updShare(ind);
+        }
+        if (!modelJob->isAdd()){
+            modelShare->insShare();
+        }
         break;
     }
     QWidget::keyPressEvent(e);
@@ -210,7 +226,7 @@ ModelJob::ModelJob(QWidget *parent) : DbTableModel("rab_job",parent)
     addColumn("id_press",tr("Пресс"),Rels::instance()->relPress);
     addColumn("chas_sm",tr("ч/см"));
     addColumn("extr_time",tr("Св.ур,%"));
-    addColumn("parti",tr("Партия"));
+    //addColumn("parti",tr("Партия"));
 
     setSuffix("left join rab_nams on rab_nams.lid = rab_job.lid left join rab_liter on rab_liter.id = rab_nams.id left join parti as p on p.id = rab_job.id_part");
     setDecimals(4,4);
@@ -366,7 +382,7 @@ void ModelShare::paste()
     if (idCopy>0){
         int id_job=this->defaultValue(1).toInt();
         QSqlQuery query;
-        query.prepare("insert into rab_share (id_job, id_rab, koef_prem_kvo, kvo, s_koef, prem) (select :id_job, id_rab, koef_prem_kvo, kvo, s_koef, prem from rab_share where id_job = :id_copy)");
+        query.prepare("insert into rab_share (id_job, id_rab, koef_prem_kvo, kvo, s_koef, prem) (select :id_job, id_rab, koef_prem_kvo, kvo, s_koef, prem from rab_share where id_job = :id_copy order by id)");
         query.bindValue(":id_job",id_job);
         query.bindValue(":id_copy",idCopy);
         if (query.exec()){
