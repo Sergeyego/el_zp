@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>860</width>
-    <height>609</height>
+    <width>858</width>
+    <height>607</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -61,6 +61,13 @@
       <widget class="QCheckBox" name="checkBoxErr">
        <property name="text">
         <string>Только ошибки</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonSave">
+       <property name="text">
+        <string>Сохранить</string>
        </property>
       </widget>
      </item>

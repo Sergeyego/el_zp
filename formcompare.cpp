@@ -14,6 +14,7 @@ FormCompare::FormCompare(QWidget *parent) :
 
     connect(ui->pushButtonUpd,SIGNAL(clicked(bool)),this,SLOT(upd()));
     connect(ui->checkBoxErr,SIGNAL(clicked(bool)),this,SLOT(upd()));
+    connect(ui->pushButtonSave,SIGNAL(clicked(bool)),this,SLOT(save()));
 }
 
 FormCompare::~FormCompare()
@@ -25,6 +26,13 @@ void FormCompare::upd()
 {
     modelCompare->refresh(ui->dateEditBeg->date(),ui->dateEditEnd->date(),ui->checkBoxErr->isChecked());
     ui->tableView->resizeToContents();
+}
+
+void FormCompare::save()
+{
+    QString tit = tr("Сравнение данных упаковки");
+    tit+=tr(" c ")+ui->dateEditBeg->date().toString("dd.MM.yyyy")+tr(" по ")+ui->dateEditEnd->date().toString("dd.MM.yyyy");
+    ui->tableView->save(tit,-1,true);
 }
 
 ModelCompare::ModelCompare(QWidget *parent) : TableModel(parent)

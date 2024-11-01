@@ -153,7 +153,13 @@ void TableView::save(QString fnam, int dec, bool fitToHeight, Qt::ScreenOrientat
                     QVariant value=this->model()->data(this->model()->index(i,j),role);
                     int d=(value.typeName()==QString("int"))? 0 : dec;
                     if (d<0){
-                        d=2;
+                        QString tmp=this->model()->data(this->model()->index(i,j),Qt::DisplayRole).toString();
+                        int pos = tmp.indexOf(QRegExp("[.,]"));
+                        if (pos>0){
+                            d=tmp.size()-pos-1;
+                        } else {
+                            d=2;
+                        }
                     }
                     if ((value.typeName()==QString("double"))||value.typeName()==QString("int")){
                         if (d>=1){

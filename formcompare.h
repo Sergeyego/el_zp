@@ -35,6 +35,7 @@ private:
 
 private slots:
     void upd();
+    void save();
 };
 
 #endif // FORMCOMPARE_H
