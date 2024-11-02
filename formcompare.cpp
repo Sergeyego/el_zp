@@ -35,7 +35,7 @@ void FormCompare::save()
     ui->tableView->save(tit,-1,true);
 }
 
-ModelCompare::ModelCompare(QWidget *parent) : TableModel(parent)
+ModelCompare::ModelCompare(QObject *parent) : TableModel(parent)
 {
     QStringList head;
     head<<tr("Дата")<<tr("Партия")<<tr("Марка")<<tr("Диаметр")<<tr("З/П, т")<<tr("Пр-во, т")<<tr("Разница, т");

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1002</width>
-    <height>678</height>
+    <width>1000</width>
+    <height>676</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,7 +35,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1002</width>
+     <width>1000</width>
      <height>25</height>
     </rect>
    </property>
@@ -73,6 +73,7 @@
      <string>Выполнение работ</string>
     </property>
     <addaction name="actionJob"/>
+    <addaction name="actionRecalc"/>
    </widget>
    <widget class="QMenu" name="menu_6">
     <property name="title">
@@ -146,6 +147,11 @@
   <action name="actionCompare">
    <property name="text">
     <string>Сравнение данных по упаковке</string>
+   </property>
+  </action>
+  <action name="actionRecalc">
+   <property name="text">
+    <string>Пересчет выпуска по упаковке</string>
    </property>
   </action>
  </widget>

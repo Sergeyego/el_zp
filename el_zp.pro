@@ -38,6 +38,7 @@ SOURCES += \
     formnormpress.cpp \
     formpremmon.cpp \
     formrab.cpp \
+    formrecalc.cpp \
     formrepmon.cpp \
     formrepnorm.cpp \
     formreptarif.cpp \
@@ -78,6 +79,7 @@ HEADERS += \
     formnormpress.h \
     formpremmon.h \
     formrab.h \
+    formrecalc.h \
     formrepmon.h \
     formrepnorm.h \
     formreptarif.h \
@@ -116,6 +118,7 @@ FORMS += \
     formnormpress.ui \
     formpremmon.ui \
     formrab.ui \
+    formrecalc.ui \
     formrepmon.ui \
     formrepnorm.ui \
     formreptarif.ui \

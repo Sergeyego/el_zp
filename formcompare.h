@@ -16,7 +16,7 @@ class ModelCompare : public TableModel
     Q_OBJECT
 
 public:
-    explicit ModelCompare(QWidget *parent = nullptr);
+    explicit ModelCompare(QObject *parent = nullptr);
     QVariant data(const QModelIndex &index, int role) const;
     void refresh(QDate beg, QDate end, bool err);
 };
