@@ -45,24 +45,26 @@ void FormRecalc::recalc()
             int id_part=modelVip->data(modelVip->index(i,0),Qt::EditRole).toUInt();
             double vip=modelVip->data(modelVip->index(i,6),Qt::EditRole).toDouble();
             double up=modelVip->data(modelVip->index(i,7),Qt::EditRole).toDouble();
-            QSqlQuery query;
-            query.prepare("update rab_job set kvo = kvo * :k "
-                          "where id in( "
-                          "select j.id "
-                          "from rab_job j "
-                          "inner join rab_nams n on n.lid=j.lid "
-                          "inner join rab_liter l on l.id=n.id "
-                          "inner join rab_rab r on j.id_rb=r.id "
-                          "where l.grp = 21 "
-                          "and j.dat between :d1 and :d2 "
-                          "and j.id_part = :id_part )");
-            query.bindValue(":k",up/vip);
-            query.bindValue(":d1",beg);
-            query.bindValue(":d2",end);
-            query.bindValue(":id_part",id_part);
-            if (!query.exec()){
-                err=query.lastError().text();
-                break;
+            if (vip>0){
+                QSqlQuery query;
+                query.prepare("update rab_job set kvo = kvo * :k "
+                              "where id in( "
+                              "select j.id "
+                              "from rab_job j "
+                              "inner join rab_nams n on n.lid=j.lid "
+                              "inner join rab_liter l on l.id=n.id "
+                              "inner join rab_rab r on j.id_rb=r.id "
+                              "where l.grp = 21 "
+                              "and j.dat between :d1 and :d2 "
+                              "and j.id_part = :id_part )");
+                query.bindValue(":k",up/vip);
+                query.bindValue(":d1",beg);
+                query.bindValue(":d2",end);
+                query.bindValue(":id_part",id_part);
+                if (!query.exec()){
+                    err=query.lastError().text();
+                    break;
+                }
             }
         }
         upd();
