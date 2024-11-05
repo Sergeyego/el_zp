@@ -12,6 +12,7 @@ FormRecalc::FormRecalc(QWidget *parent) :
     ui->tableView->setModel(modelVip);
     connect(ui->pushButtonUpd,SIGNAL(clicked(bool)),this,SLOT(upd()));
     connect(ui->pushButtonRecalc,SIGNAL(clicked(bool)),this,SLOT(recalc()));
+    connect(modelVip,SIGNAL(sigSum(QString)),ui->labelSum,SLOT(setText(QString)));
 }
 
 FormRecalc::~FormRecalc()
@@ -131,4 +132,17 @@ void ModelVip::refresh(QDate beg, QDate end)
         setHeaderData(7,Qt::Horizontal,tr("Упаковка, т"));
         setHeaderData(8,Qt::Horizontal,tr("Отклонение, %"));
     }
+    calcSum();
+}
+
+void ModelVip::calcSum()
+{
+    double sumVip=0;
+    double sumUp=0;
+    for (int i=0; i<rowCount(); i++){
+        sumVip+=data(index(i,6),Qt::EditRole).toDouble();
+        sumUp+=data(index(i,7),Qt::EditRole).toDouble();
+    }
+    QString s = QString("Выпуск итого: %1 т; Упаковка итого: %2 т").arg(QLocale().toString(sumVip,'f',4)).arg(QLocale().toString(sumUp,'f',4));
+    emit sigSum(s);
 }

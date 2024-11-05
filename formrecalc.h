@@ -18,6 +18,12 @@ public:
     explicit ModelVip(QObject *parent = nullptr);
     QVariant data(const QModelIndex &item, int role) const;
     void refresh(QDate beg, QDate end);
+
+private:
+    void calcSum();
+
+signals:
+    void sigSum(QString s);
 };
 
 class FormRecalc : public QWidget

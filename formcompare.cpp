@@ -48,7 +48,7 @@ ModelCompare::ModelCompare(QObject *parent) : TableModel(parent)
 QVariant ModelCompare::data(const QModelIndex &index, int role) const
 {
     if (role==Qt::BackgroundRole){
-        return abs(this->data(this->index(index.row(),this->columnCount()-1),Qt::EditRole).toDouble())<0.00001 ? QVariant(QColor(170,255,170)) : QVariant(QColor(255,170,170));
+        return fabs(this->data(this->index(index.row(),this->columnCount()-1),Qt::EditRole).toDouble())<0.00001 ? QVariant(QColor(170,255,170)) : QVariant(QColor(255,170,170));
     }
     return TableModel::data(index,role);
 }

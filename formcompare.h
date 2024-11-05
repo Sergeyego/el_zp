@@ -6,6 +6,7 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QSqlError>
+#include <cmath>
 
 namespace Ui {
 class FormCompare;

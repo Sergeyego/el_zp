@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>861</width>
-    <height>630</height>
+    <width>859</width>
+    <height>628</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -94,6 +94,19 @@
    </item>
    <item>
     <widget class="TableView" name="tableView"/>
+   </item>
+   <item>
+    <widget class="QLabel" name="labelSum">
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Итого:</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
