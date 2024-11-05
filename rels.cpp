@@ -71,7 +71,7 @@ Rels::Rels(QObject *parent) : QObject(parent)
 
     relElPart = new DbSqlRelation("parti","id","str",this);
     relElPart->setAlias("eparti");
-    relElPart->setSort("eparti.dat_part desc, eparti.n_s desc");
+    relElPart->setSort("eparti.yea desc, eparti.n_s");
     relElPart->setFilter("eparti.id<>0");
     relElPart->model()->setLimit(4000);
 }
