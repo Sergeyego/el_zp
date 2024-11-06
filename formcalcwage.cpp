@@ -589,7 +589,7 @@ void FormCalcWage::tabel()
     ws->setColumnWidth(5,5,20);
     ws->setColumnWidth(6,6,11);
     ws->setColumnWidth(7,7,6);
-    ws->setColumnWidth(8,8,9);
+    ws->setColumnWidth(8,8,11);
     ws->setColumnWidth(9,9,6);
     ws->setColumnWidth(10,10,9);
     ws->setColumnWidth(11,11,10);
