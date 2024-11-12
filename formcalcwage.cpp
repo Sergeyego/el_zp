@@ -219,7 +219,7 @@ void FormCalcWage::upd()
     QString query = QString("select c.id, c.dat, c.fnam, c.s_kvo, c.kvo, c.prk, c.prn, c.pr, c.tarif, c.zpl, c.dopl, c.extr, c.night, c.premk, c.premn, c.prem, "
                             "(c.zpl+c.dopl+c.extr+c.night+c.premk+c.premn+c.prem) as total, e.nam, rl.naim from zrw_calc_wage('%1', '%2') as c "
                             "inner join wire_rab_ed as e on c.id_ed=e.id "
-                            "inner join rab_liter as rl on rl.id=c.id_lit").arg(ui->dateEditBeg->date().toString("yyyy-MM-dd")).arg(ui->dateEditEnd->date().toString("yyyy-MM-dd"));
+                            "inner join rab_liter as rl on rl.id=c.id_lit order by c.id, c.dat, c.fnam").arg(ui->dateEditBeg->date().toString("yyyy-MM-dd")).arg(ui->dateEditEnd->date().toString("yyyy-MM-dd"));
     sqlExecutor->setQuery(query);
     sqlExecutor->start();
     updTitle();

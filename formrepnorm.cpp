@@ -62,24 +62,20 @@ FormRepNorm::~FormRepNorm()
 QString FormRepNorm::getProf(int id_rb, QDate date)
 {
     QSqlQuery query;
-    QString prof, razr;
-    query.prepare("select q.id_rab, p.nam, r.num, q.dat from rab_qual as q "
-                  "inner join rab_prof as p on q.id_prof=p.id "
-                  "inner join rab_razr as r on q.id_razr=r.id "
-                  "where q.id_rab= :id_rb1 and q.dat=(select max(dat) from rab_qual where id_rab= :id_rb2 and dat<= :date )");
+    QString prof;
+    query.prepare("select rr.snam, kj.nam "
+                  "from rab_rab rr "
+                  "left join kamin_get_empl(:date,:date) as k on k.id_empl = rr.id_kamin "
+                  "left join kamin_job kj on kj.id = k.id_job "
+                  "where rr.id = :id_rb");
     query.bindValue(":date",date);
-    query.bindValue(":id_rb1",id_rb);
-    query.bindValue(":id_rb2",id_rb);
+    query.bindValue(":id_rb",id_rb);
     if (!query.exec()){
         QMessageBox::critical(this,"Error",query.lastError().text(),QMessageBox::Cancel);
     } else {
-        while (query.next()){
+        if (query.next()){
             prof=query.value(1).toString();
-            razr=query.value(2).toString();
         }
-    }
-    if (!razr.isNull() && razr!="-"){
-        prof+=" "+razr+QString::fromUtf8(" разряд");
     }
     return prof;
 }
