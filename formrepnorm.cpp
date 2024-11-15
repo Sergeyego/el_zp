@@ -584,7 +584,7 @@ void JobSqlModel::refresh(bool emp, QString zonSuf, bool fsm, QDate dbeg, QDate 
     if (!fsm){
         qu="select j.id, j.datf, "
            "(CASE WHEN exists "
-           "(select rj.id from rab_job as rj inner join rab_nams as rn on rj.lid=rn.lid where rj.datf=j.datf and rj.id_rb=j.id_rb and rn.id=28) "
+           "(select rj.id from rab_job as rj inner join rab_nams as rn on rj.lid=rn.lid inner join rab_liter as rl on rl.id=rn.id where rj.datf=j.datf and rj.id_rb=j.id_rb and rl.zon=19) "
            "THEN 1 ELSE 0 END) as sm, "
            "p.nam, r.snam, j.chas_sm, right(n.fnam, length(n.fnam)-COALESCE(length(lt.liter),0)), "
            "get_norm_el(j.id, 11) as norms11, "
