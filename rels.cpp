@@ -43,6 +43,7 @@ Rels::Rels(QObject *parent) : QObject(parent)
     relDiam->setSort("diam.diam");
 
     relComp = new DbSqlRelation("matr","id","nam",this);
+    relComp->setFilter("matr.id>0");
     relComp->setSort("matr.nam");
 
     relJobNam = new DbSqlRelation("rbt_nam","lid","fnam",this);
