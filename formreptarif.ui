@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>865</width>
-    <height>655</height>
+    <width>863</width>
+    <height>653</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,6 +41,23 @@
       </widget>
      </item>
      <item>
+      <widget class="QRadioButton" name="radioButtonTarif">
+       <property name="text">
+        <string>Сортировать по тарифам</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radioButtonMark">
+       <property name="text">
+        <string>Сортировать по маркам</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -56,7 +73,7 @@
      <item>
       <widget class="QPushButton" name="pushButtonSave">
        <property name="text">
-        <string>Сохранить</string>
+        <string>Сохранить отчет</string>
        </property>
       </widget>
      </item>
