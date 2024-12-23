@@ -40,7 +40,7 @@ void FormRepTarif::upd()
                   "case when rn.dim<>0 then 'ф'||cast(rn.dim as varchar(3)) else '' end || "
                   "case when rn.id_comp<>0 then m.nam else '' end || "
                   "case when rn.id_trf<>0 then rr.num||' разряд' else '' end as snam, "
-                  "t.tarif-(t.tarif*t.k_dpl/100.0), t.k_dpl, (t.tarif*t.k_dpl/100.0), t.tarif "
+                  "t.tarif-(t.tarif*t.k_dpl/100/(1+t.k_dpl/100.0))::numeric(18,2), t.k_dpl, (t.tarif*t.k_dpl/100/(1+t.k_dpl/100.0))::numeric(18,2), t.tarif "
                   "from rw_tarif(:d) as t "
                   "inner join rab_nams rn on rn.lid=t.lid "
                   "inner join rab_liter rl on rl.id=rn.id "
