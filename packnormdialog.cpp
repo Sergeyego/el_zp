@@ -39,6 +39,7 @@ PackNormDialog::PackNormDialog(QWidget *parent) :
     connect(ui->pushButton,SIGNAL(clicked()),this,SLOT(go()));
     connect(ui->pushButtonNew,SIGNAL(clicked()),this,SLOT(clearTbl()));
     connect(ui->pushButtonSel,SIGNAL(clicked(bool)),this,SLOT(selType()));
+    connect(ui->tableViewMark->horizontalHeader(),SIGNAL(sectionClicked(int)),modelMark,SLOT(checkAll()));
 }
 
 PackNormDialog::~PackNormDialog()

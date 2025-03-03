@@ -8,6 +8,10 @@ AllPressDialog::AllPressDialog(QWidget *parent) :
     ui->setupUi(this);
     ui->dateEdit->setDate(QDate::currentDate().addDays(-QDate::currentDate().day()+1));
 
+    Rels::instance()->relMarkType->refreshModel();
+    ui->comboBoxType->setModel(Rels::instance()->relMarkType->model());
+    ui->comboBoxType->setModelColumn(1);
+
     delegate = new QDoubleDelegate(this);
 
     modelMark = new ModelZon(tr("Выберите марку"),Rels::instance()->relMark->model(),false,this);
@@ -32,7 +36,9 @@ AllPressDialog::AllPressDialog(QWidget *parent) :
     ui->tableWidgetNorms->setColumnHidden(0,true);
     ui->tableWidgetNorms->verticalHeader()->hide();
     ui->tableWidgetNorms->setItemDelegateForColumn(2,delegate);
+
     connect(ui->pushButton,SIGNAL(clicked()),this,SLOT(go()));
+    connect(ui->pushButtonSel,SIGNAL(clicked(bool)),this,SLOT(selType()));
     connect(ui->pushButtonNew,SIGNAL(clicked()),this,SLOT(clearTbl()));
 }
 
@@ -101,5 +107,22 @@ void AllPressDialog::clearTbl()
     modelMark->checkAll(false);
     for (int i=0; i<ui->tableWidgetNorms->rowCount(); i++){
         ui->tableWidgetNorms->item(i,2)->setData(Qt::EditRole,QVariant());
+    }
+}
+
+void AllPressDialog::selType()
+{
+    int id_type = ui->comboBoxType->model()->data(ui->comboBoxType->model()->index(ui->comboBoxType->currentIndex(),0),Qt::EditRole).toInt();
+    QSqlQuery query;
+    query.prepare("select id, marka from elrtr where id_norm_type = :t order by marka");
+    query.bindValue(":t",id_type);
+    QSet<int> els;
+    if (query.exec()){
+        while (query.next()){
+            els.insert(query.value(0).toInt());
+        }
+        modelMark->setSel(els);
+    } else {
+        QMessageBox::critical(this,tr("Ошибка"),query.lastError().text(),QMessageBox::Cancel);
     }
 }

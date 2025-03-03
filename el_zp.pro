@@ -64,7 +64,8 @@ SOURCES += \
     qdoubledelegate.cpp \
     rels.cpp \
     tableview.cpp \
-    modelro.cpp
+    modelro.cpp \
+    tndialog.cpp
 
 HEADERS += \
     allpressdialog.h \
@@ -104,7 +105,8 @@ HEADERS += \
     qdoubledelegate.h \
     rels.h \
     tableview.h \
-    modelro.h
+    modelro.h \
+    tndialog.h
 
 FORMS += \
     allpressdialog.ui \
@@ -128,7 +130,8 @@ FORMS += \
     db/dbrelationeditdialog.ui \
     formcalcwage.ui \
     packnormdialog.ui \
-    progressreportdialog.ui
+    progressreportdialog.ui \
+    tndialog.ui
 
 RC_FILE = ico.rc
 

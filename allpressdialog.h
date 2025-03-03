@@ -30,6 +30,7 @@ private:
 private slots:
     void go();
     void clearTbl();
+    void selType();
 };
 
 #endif // ALLPRESSDIALOG_H

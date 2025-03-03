@@ -7,6 +7,7 @@
 #include "db/dbtablemodel.h"
 #include "modelro.h"
 #include "progressexecutor.h"
+#include "tndialog.h"
 
 namespace Ui {
 class FormTarif;
@@ -23,6 +24,7 @@ public:
 private:
     Ui::FormTarif *ui;
     ModelZon *modelZon;
+    ModelZon *modelVid;
     ModelZon *modelMark;
     ModelZon *modelDiam;
     ModelZon *modelComp;
@@ -34,6 +36,8 @@ private slots:
     void upd();
     void updData(QModelIndex ind);
     void updFull();
+    void selType();
+    void setGrpTarif();
 };
 
 #endif // FORMTARIF_H
