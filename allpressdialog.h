@@ -26,6 +26,7 @@ private:
     Ui::AllPressDialog *ui;
     QDoubleDelegate *delegate;
     ModelZon *modelMark;
+    ModelZon *modelPress;
 
 private slots:
     void go();

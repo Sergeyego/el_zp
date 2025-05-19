@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>944</width>
-    <height>576</height>
+    <width>872</width>
+    <height>644</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Нормы для всех прессов</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
@@ -111,7 +111,7 @@
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="TableView" name="tableViewMark">
@@ -155,16 +155,42 @@
        </item>
       </layout>
      </widget>
-     <widget class="QTableWidget" name="tableWidgetNorms">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="selectionMode">
-       <enum>QAbstractItemView::SingleSelection</enum>
-      </property>
+     <widget class="QWidget" name="">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QTableWidget" name="tableWidgetNorms">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Пресса</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="TableView" name="tableViewPress">
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+         <attribute name="verticalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>

@@ -18,6 +18,10 @@ AllPressDialog::AllPressDialog(QWidget *parent) :
     ui->tableViewMark->setModel(modelMark);
     ui->tableViewMark->setColumnWidth(0,300);
 
+    modelPress = new ModelZon(tr("Выберите пресс"),Rels::instance()->relPressFlt->model(),false,this);
+    ui->tableViewPress->setModel(modelPress);
+    ui->tableViewPress->setColumnWidth(0,300);
+
     QAbstractItemModel *modelDiam = Rels::instance()->relDiam->model();
     ui->tableWidgetNorms->setRowCount(modelDiam->rowCount());
     ui->tableWidgetNorms->setColumnCount(3);
@@ -52,8 +56,8 @@ void AllPressDialog::go()
     QStringList error;
     bool isEdt=false;
     QSet<int> elr=modelMark->getSel();
-    for (int i=0; i<Rels::instance()->relPressFlt->model()->rowCount(); i++){
-        int id_pr=Rels::instance()->relPressFlt->model()->data(Rels::instance()->relPressFlt->model()->index(i,0)).toInt();
+    QSet<int> press=modelPress->getSel();
+    for (int id_pr : press){
         for (int id_el : elr){
             for (int k=0; k<ui->tableWidgetNorms->rowCount(); k++){
                 double norm=ui->tableWidgetNorms->item(k,2)->data(Qt::EditRole).toDouble();
