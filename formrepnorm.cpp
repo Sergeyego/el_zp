@@ -186,7 +186,7 @@ void FormRepNorm::saveXls()
 
             if (id_rb_old!=id_rb){
                 if (m>1){
-                    numFormat.setNumberFormat(QString("0.%1").arg((0),1,'d',0,QChar('0')));
+                    numFormat.setNumberFormat(QString("0.0"));
                     ws->mergeCells(CellRange(m_date,9,m-1,9),numFormat);
                     ws->writeNumeric(m_date,9,sumVip,numFormat);
                     sumVip=0;
@@ -197,7 +197,7 @@ void FormRepNorm::saveXls()
                     double vip, kvo;
                     int d;
                     getTotalVip(vip,d,kvo,id_rb_old);
-                    numFormat.setNumberFormat(QString("0.%1").arg((0),1,'d',0,QChar('0')));
+                    numFormat.setNumberFormat(QString("0.0"));
                     ws->writeNumeric(m,9,vip,numFormat);
                     m++;
                 }
@@ -225,7 +225,7 @@ void FormRepNorm::saveXls()
             numFormat.setNumberFormat("0");
             ws->writeNumeric(m,4,otr,numFormat);
 
-            numFormat.setNumberFormat(QString("0.%1").arg((0),3,'d',0,QChar('0')));
+            numFormat.setNumberFormat(QString("0.000"));
             ws->writeNumeric(m,5,norm11,numFormat);
 
             ws->writeNumeric(m,6,norm,numFormat);
@@ -236,12 +236,12 @@ void FormRepNorm::saveXls()
                 ws->writeBlank(m,7,numFormat);
             }
 
-            numFormat.setNumberFormat(QString("0.%1").arg((0),1,'d',0,QChar('0')));
+            numFormat.setNumberFormat(QString("0.0"));
             ws->writeNumeric(m,8,vip,numFormat);
 
             if (date_old!=date || id_rb_old!=id_rb){
                 if (m>1){
-                    numFormat.setNumberFormat(QString("0.%1").arg((0),1,'d',0,QChar('0')));
+                    numFormat.setNumberFormat(QString("0.0"));
                     ws->mergeCells(CellRange(m_date,9,m-1,9),numFormat);
                     ws->writeNumeric(m_date,9,sumVip,numFormat);
                     sumVip=0;
@@ -255,7 +255,7 @@ void FormRepNorm::saveXls()
             m++;
         }
 
-        numFormat.setNumberFormat(QString("0.%1").arg((0),1,'d',0,QChar('0')));
+        numFormat.setNumberFormat(QString("0.0"));
         ws->mergeCells(CellRange(m_date,9,m-1,9),numFormat);
         ws->writeNumeric(m_date,9,sumVip,numFormat);
         ws->insertRowBreak(m);
@@ -264,7 +264,7 @@ void FormRepNorm::saveXls()
         double vip, kvo;
         int d;
         getTotalVip(vip,d,kvo,id_rb_old);
-        numFormat.setNumberFormat(QString("0.%1").arg((0),1,'d',0,QChar('0')));
+        numFormat.setNumberFormat(QString("0.0"));
         ws->writeNumeric(m,9,vip,numFormat);
 
         QString footerData=QString("&L%1").arg(signRep);
@@ -400,9 +400,9 @@ void FormRepNorm::saveXlsPer()
                     double total=0, kvo=0;
                     int day=0;
                     getTotalVip(total,day,kvo,id_rb_old);
-                    sumFormat.setNumberFormat(QString("0.%1").arg((0),3,'d',0,QChar('0')));
+                    sumFormat.setNumberFormat(QString("0.000"));
                     ws->writeNumeric(m_beg,7,kvo,sumFormat);//выполнение итого
-                    sumFormat.setNumberFormat(QString("0.%1").arg((0),1,'d',0,QChar('0')));
+                    sumFormat.setNumberFormat(QString("0.0"));
                     ws->writeNumeric(m_beg,9,total,sumFormat);//общий процент
                 }
                 ws->mergeCells(CellRange(m,1,m,10),titleFormat);
@@ -442,9 +442,9 @@ void FormRepNorm::saveXlsPer()
                 double total=0, kvo=0;
                 int day=0;
                 getTotalVip(total,day,kvo,id_rb_old);
-                sumFormat.setNumberFormat(QString("0.%1").arg((0),1,'d',0,QChar('0')));
+                sumFormat.setNumberFormat(QString("0.0"));
                 ws->writeNumeric(m_beg,9,total,sumFormat);//общий процент
-                sumFormat.setNumberFormat(QString("0.%1").arg((0),3,'d',0,QChar('0')));
+                sumFormat.setNumberFormat(QString("0.0"));
                 ws->writeNumeric(m_beg,7,kvo,sumFormat);//выполнение итого
                 m_beg=m;
             }
@@ -461,14 +461,14 @@ void FormRepNorm::saveXlsPer()
             numFormat.setNumberFormat("0");
             ws->writeNumeric(m,4,otr,numFormat);//к-во часов
             ws->writeString(m,5,smena,strFormat);//смена
-            numFormat.setNumberFormat(QString("0.%1").arg((0),3,'d',0,QChar('0')));
+            numFormat.setNumberFormat(QString("0.000"));
             ws->writeNumeric(m,5,norm11,numFormat);//норма за 11 часов
             if (id_ed==1){
                 ws->writeNumeric(m,6,fact,numFormat);//факт. выполнение
             } else {
                 ws->writeBlank(m,6,numFormat);
             }
-            numFormat.setNumberFormat(QString("0.%1").arg((0),1,'d',0,QChar('0')));
+            numFormat.setNumberFormat(QString("0.0"));
             ws->writeNumeric(m,8,vip,numFormat);//выполнение по маркам
             ws->writeString(m,10,prim,strFormat);//примечание
 
@@ -490,9 +490,9 @@ void FormRepNorm::saveXlsPer()
         double total=0, kvo=0;
         int day=0;
         getTotalVip(total,day,kvo,id_rb_old);
-        sumFormat.setNumberFormat(QString("0.%1").arg((0),3,'d',0,QChar('0')));
+        sumFormat.setNumberFormat(QString("0.000"));
         ws->writeNumeric(m_beg,7,kvo,sumFormat);//выполнение итого
-        sumFormat.setNumberFormat(QString("0.%1").arg((0),1,'d',0,QChar('0')));
+        sumFormat.setNumberFormat(QString("0.0"));
         ws->writeNumeric(m_beg,9,total,sumFormat);//общий процент
 
         QString footerData=QString("&L%1").arg(signRep);

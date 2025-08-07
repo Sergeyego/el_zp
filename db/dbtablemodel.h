@@ -38,6 +38,7 @@ public slots:
 
 private slots:
     void queryFinished();
+    void setFlt(QString reg);
 
 private:
     DbSqlRelation *relation;
@@ -127,9 +128,9 @@ public:
     void clear();
     void delRow(int pos);
     void setRow(QVector<colVal> &row, int pos);
+    QVector<colVal> row(int r) const;
 protected:
     void insertRow(int pos, QVector<colVal> &row);
-    QVector<colVal> row(int r) const;
     void setValue(const colVal &val, int row, int column);
     friend class DataEditor;
 private:
@@ -183,6 +184,8 @@ public:
     QVariant::Type columnType(int column) const;
     QVariant nullVal(int column) const;
     int currentEdtRow() const;
+    QVector<colVal> oldRow();
+    QVector<colVal> newRow();
     QValidator* validator(int column) const;
     void setValidator(int column, QValidator *validator);
     void setDefaultValue(int column, QVariant value);
@@ -191,6 +194,7 @@ public:
     bool setDecimals(int column, int dec);
     void setInsertable(bool b);
     QString name() const;
+    virtual void refreshRow(int row);
 
 protected:
     QString tableName;

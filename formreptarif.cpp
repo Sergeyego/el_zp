@@ -98,7 +98,7 @@ void FormRepTarif::save()
         numFormat.setBorderStyle(Format::BorderThin);
         numFormat.setFont(defaultFont);
         numFormat.setVerticalAlignment(Format::AlignTop);
-        numFormat.setNumberFormat(QString("0.%1").arg((0),2,'d',0,QChar('0')));
+        numFormat.setNumberFormat(QString("0.00"));
         Format titleFormat;
         titleFormat.setBorderStyle(Format::BorderNone);
         titleFormat.setFont(titleFont);

@@ -243,6 +243,16 @@ int DbTableModel::currentEdtRow() const
     return editor->currentPos();
 }
 
+QVector<colVal> DbTableModel::oldRow()
+{
+    return editor->oldRow();
+}
+
+QVector<colVal> DbTableModel::newRow()
+{
+    return editor->newRow();
+}
+
 QValidator *DbTableModel::validator(int column) const
 {
     return modelData->column(column)->validator;
@@ -299,6 +309,85 @@ void DbTableModel::setInsertable(bool b)
 QString DbTableModel::name() const
 {
     return tableName;
+}
+
+void DbTableModel::refreshRow(int row)
+{
+    QSqlQuery query;
+    query.setForwardOnly(true);
+    QString qu;
+    QString cols;
+    QString rels;
+    QString pkeys;
+    QVector<colVal> oldRow=modelData->row(row);
+    QVector<colVal> newRow;
+
+    for (int i=0; i<modelData->columnCount(); i++){
+        if (!cols.isEmpty()){
+            cols+=", ";
+        }
+        cols+=tableName+"."+modelData->column(i)->name;
+    }
+
+    for (int i=0; i<modelData->columnCount(); i++){
+        if (!cols.isEmpty()){
+            cols+=", ";
+        }
+        if (modelData->column(i)->sqlRelation){
+            if (!modelData->column(i)->defaultVal.val.isNull()){
+                modelData->column(i)->defaultVal.disp=modelData->column(i)->sqlRelation->getDisplayValue(modelData->column(i)->defaultVal.val);
+            }
+            cols+=modelData->column(i)->sqlRelation->getCDisplay();
+        } else {
+            cols+="NULL";
+        }
+        if (pkList.contains(modelData->column(i)->name)) {
+            if (!pkeys.isEmpty()){
+                pkeys+=" AND ";
+            }
+            pkeys+=(tableName+"."+modelData->column(i)->name +" = :pk"+modelData->column(i)->name);
+        }
+    }
+
+    qu="SELECT "+cols+" FROM "+tableName;
+
+    for (int i=0; i<modelData->columnCount(); i++){
+        if (modelData->column(i)->sqlRelation){
+            if (!modelData->column(i)->sqlRelation->isInital()){
+                modelData->column(i)->sqlRelation->refreshModel();
+            }
+            if (!rels.isEmpty()){
+                rels+=" ";
+            }
+            rels+=modelData->column(i)->sqlRelation->joinStr(tableName,modelData->column(i)->name);
+        }
+    }
+    if (!rels.isEmpty()) qu+=" "+rels;
+    if (!suffix.isEmpty()) qu+=" "+suffix;
+    if (!pkeys.isEmpty()) qu+=" WHERE "+pkeys;
+
+    query.prepare(qu);
+    for (int i=0; i<modelData->columnCount(); i++){
+        if (pkList.contains(modelData->column(i)->name)) {
+            query.bindValue(":pk"+modelData->column(i)->name,oldRow[i].val);
+        }
+    }
+
+    //qDebug()<<query.executedQuery()/*<<" "<<qu*/;
+    if (query.exec()){
+        if (query.next()){
+            for (int i=0; i<modelData->columnCount(); i++){
+                colVal c;
+                c.val=query.value(i);
+                c.disp=query.value(i+modelData->columnCount()).toString();
+                newRow.push_back(c);
+            }
+            modelData->setRow(newRow,row);
+            emit dataChanged(this->index(row,0),this->index(row,columnCount()-1));
+        }
+    } else {
+        QMessageBox::critical(nullptr,tr("Error"),query.lastError().text(),QMessageBox::Cancel);
+    }
 }
 
 bool DbTableModel::insertDb()
@@ -877,8 +966,8 @@ DbSqlLikeModel::DbSqlLikeModel(DbSqlRelation *r, QObject *parent) : QSortFilterP
     inital=false;
     setSourceModel(origModel);
     setFilterKeyColumn(2);
-    setFilterRegExp(relation->getCurrentFilterRegExp());
-    connect(relation,SIGNAL(filterRegExpInstalled(QString)),this,SLOT(setFilterRegExp(QString)));
+    setFilterRegularExpression(relation->getCurrentFilterRegExp());
+    connect(relation,SIGNAL(filterRegExpInstalled(QString)),this,SLOT(setFlt(QString)));
 }
 
 void DbSqlLikeModel::setAsync(bool b)
@@ -982,4 +1071,11 @@ void DbSqlLikeModel::queryFinished()
         emit searchFinished(s);
         e->deleteLater();
     }
+}
+
+void DbSqlLikeModel::setFlt(QString reg)
+{
+    QRegularExpression exp(reg);
+    exp.setPatternOptions(QRegularExpression::UseUnicodePropertiesOption);
+    setFilterRegularExpression(exp);
 }

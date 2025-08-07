@@ -28,7 +28,11 @@ void DbViewer::setModel(QAbstractItemModel *model)
     QTableView::setModel(model);
     DbTableModel *sqlModel = qobject_cast<DbTableModel *>(this->model());
     if (sqlModel){
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+        disconnect(this->selectionModel(),&QItemSelectionModel::currentRowChanged,this->model(),&QAbstractItemModel::submit);
+#else
         disconnect(selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this->model(), SLOT(submit()));
+#endif
         connect(this->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(submit(QModelIndex,QModelIndex)));
     } else {
         setMenuEnabled(false);

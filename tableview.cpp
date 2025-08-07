@@ -154,7 +154,7 @@ void TableView::save(QString fnam, int dec, bool fitToHeight, Qt::ScreenOrientat
                     int d=(value.typeName()==QString("int"))? 0 : dec;
                     if (d<0){
                         QString tmp=this->model()->data(this->model()->index(i,j),Qt::DisplayRole).toString();
-                        int pos = tmp.indexOf(QRegExp("[.,]"));
+                        int pos = tmp.indexOf(QRegularExpression("[.,]"));
                         if (pos>0){
                             d=tmp.size()-pos-1;
                         } else {
@@ -163,7 +163,7 @@ void TableView::save(QString fnam, int dec, bool fitToHeight, Qt::ScreenOrientat
                     }
                     if ((value.typeName()==QString("double"))||value.typeName()==QString("int")){
                         if (d>=1){
-                            QString fmt=QString("# ##0.%1").arg((0),d,'d',0,QChar('0'));
+                            QString fmt=QString("# ##0.0");
                             numFormat.setNumberFormat(fmt);
                         } else {
                             numFormat.setNumberFormat("0");
