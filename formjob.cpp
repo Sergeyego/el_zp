@@ -39,6 +39,9 @@ FormJob::FormJob(QWidget *parent) :
     ui->tableViewShare->setColumnWidth(4,80);
     ui->tableViewShare->setColumnWidth(5,80);
     ui->tableViewShare->setColumnWidth(6,80);
+    ui->tableViewShare->setColumnWidth(7,80);
+    ui->tableViewShare->setColumnWidth(8,80);
+    showDop();
 
     connect(ui->tableViewZon->horizontalHeader(),SIGNAL(sectionClicked(int)),modelZon,SLOT(checkAll()));
     connect(ui->pushButtonUpd,SIGNAL(clicked(bool)),this,SLOT(upd()));
@@ -57,6 +60,7 @@ FormJob::FormJob(QWidget *parent) :
     connect(ui->pushButtonCopy,SIGNAL(clicked(bool)),modelShare,SLOT(copy()));
     connect(ui->pushButtonPaste,SIGNAL(clicked(bool)),modelShare,SLOT(paste()));
     connect(ui->pushButtonOst,SIGNAL(clicked(bool)),this,SLOT(split()));
+    connect(ui->checkBoxDop,SIGNAL(clicked(bool)),this,SLOT(showDop()));
 
     upd();
 }
@@ -211,6 +215,12 @@ void FormJob::split()
     }
 }
 
+void FormJob::showDop()
+{
+    ui->tableViewShare->setColumnHidden(7,!ui->checkBoxDop->isChecked());
+    ui->tableViewShare->setColumnHidden(8,!ui->checkBoxDop->isChecked());
+}
+
 ModelJob::ModelJob(QWidget *parent) : DbTableModel("rab_job",parent)
 {
     executorNorm = new Executor(this);
@@ -338,18 +348,24 @@ ModelShare::ModelShare(QWidget *parent): DbTableModel("rab_share",parent)
     addColumn("id",tr("id"));
     addColumn("id_job",tr("id_job"));
     addColumn("id_rab",tr("Работник (F5)"),Rels::instance()->relRab);
-    addColumn("koef_prem_kvo",tr("К.прем"));
+    addColumn("koef_prem_kvo",tr("К.кач."));
     addColumn("kvo",tr("Выполн."));
     addColumn("s_koef",tr("Коэфф"));
     addColumn("prem",tr("Св.ур,%"));
+    addColumn("koef_prem_norm",tr("К.норм."));
+    addColumn("koef_prem",tr("К.прем."));
     setSort("rab_share.id");
     setDecimals(3,2);
     setDecimals(4,4);
     setDecimals(5,2);
     setDecimals(6,1);
+    setDecimals(7,2);
+    setDecimals(8,2);
     setDefaultValue(3,1.0);
     setDefaultValue(4,1.0);
     setDefaultValue(5,1.0);
+    setDefaultValue(7,1.0);
+    setDefaultValue(8,1.0);
 }
 
 void ModelShare::refresh(int id_job)
@@ -382,7 +398,7 @@ void ModelShare::paste()
     if (idCopy>0){
         int id_job=this->defaultValue(1).toInt();
         QSqlQuery query;
-        query.prepare("insert into rab_share (id_job, id_rab, koef_prem_kvo, kvo, s_koef, prem) (select :id_job, id_rab, koef_prem_kvo, kvo, s_koef, prem from rab_share where id_job = :id_copy order by id)");
+        query.prepare("insert into rab_share (id_job, id_rab, koef_prem_kvo, kvo, s_koef, prem, koef_prem_norm, koef_prem) (select :id_job, id_rab, koef_prem_kvo, kvo, s_koef, prem, koef_prem_norm, koef_prem from rab_share where id_job = :id_copy order by id)");
         query.bindValue(":id_job",id_job);
         query.bindValue(":id_copy",idCopy);
         if (query.exec()){

@@ -229,7 +229,7 @@ void FormCalcWage::updFinished()
 {
     QVector<QVector<QVariant>> data = sqlExecutor->getData();
     QSqlQuery query;
-    query.prepare("select id, fam, nam, otc, tabel, fnam, prof, snam, begdate, enddate from zrw_empl(:d1,:d2)");
+    query.prepare("select id, fam, nam, otc, tabel, fnam, prof, snam, begdate, enddate, sub from zrw_empl(:d1,:d2)");
     query.bindValue(":d1",ui->dateEditBeg->date());
     query.bindValue(":d2",ui->dateEditEnd->date());
     if (modelRab->execQuery(query)){
@@ -315,11 +315,17 @@ void FormCalcWage::setDataModel()
 void FormCalcWage::updTitle()
 {
     QSqlQuery query;
-    query.prepare("select fnam, sign_norm_el from hoz where id=11");
+    query.prepare("select job, snam, org from kamin_get_inf(:dat, "
+                  "(select kn.id_empl "
+                  "from kamin_norm kn where "
+                  "kn.dat=(select max(dat) from kamin_norm where dat <= :dat ) "
+                  "))");
+    query.bindValue(":dat",ui->dateEditEnd->date());
     if (query.exec()){
         while (query.next()){
-            orgName=query.value(0).toString();
-            sign=query.value(1).toString();
+            normTitle=query.value(0).toString();
+            normEmpl=query.value(1).toString();
+            orgName=query.value(2).toString();
         }
     } else {
         QMessageBox::critical(this,"Error",query.lastError().text(),QMessageBox::Cancel);
@@ -539,25 +545,21 @@ void FormCalcWage::tabel()
     }
 
     QSet<int> sel=d.getSel();
+    QSet<QString> subs;
 
     QString title=QString("Начисление заработной платы с %1 по %2").arg(ui->dateEditBeg->date().toString("dd.MM.yy")).arg(ui->dateEditEnd->date().toString("dd.MM.yy"));
 
     Document xlsx;
-    Worksheet *ws=xlsx.currentWorksheet();
+
     XlsxPageSetup pageSetup;
     pageSetup.fitToPage=true;
     pageSetup.fitToWidth=1;
     pageSetup.fitToHeight=0;
     pageSetup.orientation=XlsxPageSetup::landscape;
-    ws->setPageSetup(pageSetup);
+
     QFont defaultFont("Arial", 10);
     QFont titleFont("Arial", 10);
     titleFont.setBold(true);
-
-    XlsxPageMargins margins=ws->pageMargins();
-    margins.top=0.664583333333333;
-    margins.bottom=0.928472222222222;
-    ws->setPageMargins(margins);
 
     Format strFormat;
     strFormat.setBorderStyle(Format::BorderThin);
@@ -581,166 +583,197 @@ void FormCalcWage::tabel()
     headerFormat.setHorizontalAlignment(Format::AlignHCenter);
     headerFormat.setVerticalAlignment(Format::AlignVCenter);
 
-    int m=1;
-    ws->setColumnWidth(1,1,4);
-    ws->setColumnWidth(2,2,15);
-    ws->setColumnWidth(3,3,15);
-    ws->setColumnWidth(4,4,15);
-    ws->setColumnWidth(5,5,20);
-    ws->setColumnWidth(6,6,11);
-    ws->setColumnWidth(7,7,6);
-    ws->setColumnWidth(8,8,11);
-    ws->setColumnWidth(9,9,6);
-    ws->setColumnWidth(10,10,9);
-    ws->setColumnWidth(11,11,10);
-    ws->setColumnWidth(12,12,10);
-    ws->setColumnWidth(13,13,10);
-    ws->setColumnWidth(14,14,10);
-    ws->setColumnWidth(15,15,10);
-    ws->setColumnWidth(16,16,10);
-    ws->setColumnWidth(17,17,10);
-    ws->setColumnWidth(18,18,11);
-    int num=1;
+
 
     for (int i=0; i<rabcount; i++){
-
         int id_rab=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,0)).toInt();
         if (!sel.contains(id_rab)){
             continue;
         }
-
-        QString firstName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,1)).toString();
-        QString lastName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,2)).toString();
-        QString middleName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,3)).toString();
-        QString prof=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,6)).toString();
-        QDate beg=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,8),Qt::EditRole).toDate();
-        QDate end=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,9),Qt::EditRole).toDate();
-
-        QVector<QVector<QVariant>> data = getShortData(id_rab,beg,end);
-        sumData sum = getSum(id_rab,beg,end);
-
-        ws->mergeCells(CellRange(m,1,m+1,1),headerFormat);
-        ws->writeString(m,1,QString("№"),headerFormat);
-        ws->mergeCells(CellRange(m,2,m,4),headerFormat);
-        ws->writeString(m,2,QString("Фамилия Имя Отчество"),headerFormat);
-
-        ws->mergeCells(CellRange(m+1,2,m+1,4),headerFormat);
-        ws->writeString(m+1,2,QString("Наименование работ"),headerFormat);
-
-        ws->mergeCells(CellRange(m,5,m+1,5),headerFormat);
-        ws->writeString(m,5,QString("Профессия, разряд"),headerFormat);
-
-        ws->mergeCells(CellRange(m,6,m+1,6),headerFormat);
-        ws->writeString(m,6,QString("Начислено"),headerFormat);
-
-        ws->mergeCells(CellRange(m,7,m+1,7),headerFormat);
-        ws->writeString(m,7,QString("Р. дн."),headerFormat);
-
-        ws->mergeCells(CellRange(m,8,m+1,8),headerFormat);
-        ws->writeString(m,8,QString("Кол-во"),headerFormat);
-
-        ws->mergeCells(CellRange(m,9,m+1,9),headerFormat);
-        ws->writeString(m,9,QString("Ед. изм."),headerFormat);
-
-        ws->mergeCells(CellRange(m,10,m+1,10),headerFormat);
-        ws->writeString(m,10,QString("Тариф"),headerFormat);
-
-        ws->mergeCells(CellRange(m,11,m+1,11),headerFormat);
-        ws->writeString(m,11,QString("Сдельная оплата"),headerFormat);
-
-        ws->mergeCells(CellRange(m,12,m+1,12),headerFormat);
-        ws->writeString(m,12,QString("Оплата за вредн."),headerFormat);
-
-        ws->mergeCells(CellRange(m,13,m+1,13),headerFormat);
-        ws->writeString(m,13,QString("Оплата выходн."),headerFormat);
-
-        ws->mergeCells(CellRange(m,14,m+1,14),headerFormat);
-        ws->writeString(m,14,QString("Ночная смена"),headerFormat);
-
-        ws->mergeCells(CellRange(m,15,m,17),headerFormat);
-        ws->writeString(m,15,QString("Премия"),headerFormat);
-        ws->writeString(m+1,15,QString("Кач"),headerFormat);
-        ws->writeString(m+1,16,QString("Норм"),headerFormat);
-        ws->writeString(m+1,17,QString("Мес"),headerFormat);
-
-        ws->mergeCells(CellRange(m,18,m+1,18),headerFormat);
-        ws->writeString(m,18,QString("Начислено"),headerFormat);
-
-        m+=2;
-
-        ws->setRowHeight(m,m,35);
-
-        numFormat.setNumberFormat("0");
-        ws->writeNumeric(m,1,num,numFormat);
-
-        ws->writeString(m,2,firstName,strFormat);
-        ws->writeString(m,3,lastName,strFormat);
-        ws->writeString(m,4,middleName,strFormat);
-        ws->writeString(m,5,prof,strFormat);
-
-        numFormat.setNumberFormat(QString("0.00"));
-        ws->writeNumeric(m,6,sum.total,numFormat);
-
-        numFormat.setNumberFormat("0");
-        ws->writeNumeric(m,7,sum.kvoDay,numFormat);
-        ws->writeBlank(m,8,strFormat);
-        ws->writeBlank(m,9,strFormat);
-        for (int i=10; i<=18; i++){
-            ws->writeString(m,i,tr("руб."),headerFormat);
-        }
-
-        numFormat.setNumberFormat(QString("0.00"));
-
-        m++;
-        int begm=m;
-
-        for (QVector<QVariant> row : data){
-            ws->writeBlank(m,1,numFormat);
-
-            ws->mergeCells(CellRange(m,2,m,7),numFormat);
-            ws->writeString(m,2,row[0].toString(),strFormat);
-
-            numFormat.setNumberFormat(QString("0.0000"));
-            ws->writeNumeric(m,8,row[1].toDouble(),numFormat);
-
-            ws->writeString(m,9,row[2].toString(),strFormat);
-
-            numFormat.setNumberFormat(QString("0.00"));
-            for (int i=3; i<=11; i++){
-                ws->writeNumeric(m,i+7,row[i].toDouble(),numFormat);
-            }
-            m++;
-        }
-
-        ws->mergeCells(CellRange(begm,1,m-1,1),strFormat);
-        ws->writeString(m,10,QString("ИТОГО:"),strFormat);
-
-        numFormat.setNumberFormat(QString("0.00"));
-        ws->writeNumeric(m,11,sum.zpl,numFormat);
-        ws->writeNumeric(m,12,sum.dopl,numFormat);
-        ws->writeNumeric(m,13,sum.extr,numFormat);
-        ws->writeNumeric(m,14,sum.night,numFormat);
-        ws->writeNumeric(m,15,sum.premk,numFormat);
-        ws->writeNumeric(m,16,sum.premn,numFormat);
-        ws->writeNumeric(m,17,sum.prem,numFormat);
-        ws->writeNumeric(m,18,sum.total,numFormat);
-
-        m++;
-        ws->insertRowBreak(m);
-        m++;
-        num++;
+        QString sub=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,10)).toString();
+        subs.insert(sub);
     }
 
-    QString year=QString::number(ui->dateEditBeg->date().year());
-    QString month=QLocale().standaloneMonthName(ui->dateEditBeg->date().month());
-    QString dat=month+" "+year+QString(" г.");
-    QString org=QString(" (с %1 по %2) ").arg(ui->dateEditBeg->date().toString("dd.MM.yy")).arg(ui->dateEditEnd->date().toString("dd.MM.yy"))+orgName;
+    for (QString sub : subs){
+        QStringList sub_ls = sub.split('#');
+        QString nameSheet = (sub_ls.size()==2) ? sub_ls.at(1) : tr("Начальник подразделения");
+        QString jobTitle = (sub_ls.size()==2) ? sub_ls.at(0) : tr("Должность");
+        if (xlsx.addSheet(nameSheet)){
+            xlsx.selectSheet(nameSheet);
+        }
 
-    QString headerData=QString("&LРасчет заработной платы за %1&C%2&R&D").arg(dat).arg(org);
-    QString footerData=QString("&L%1").arg(sign);
+        QString footer = QString("%1____________________ %2\n\n%3 ____________________ %4").arg(normTitle).arg(normEmpl).arg(jobTitle).arg(nameSheet);
 
-    ws->setHeaderData(headerData);
-    ws->setFooterData(footerData);
+        Worksheet *ws=xlsx.currentWorksheet();
+
+        ws->setPageSetup(pageSetup);
+
+        XlsxPageMargins margins=ws->pageMargins();
+        margins.top=0.664583333333333;
+        margins.bottom=0.970138888888889;
+        ws->setPageMargins(margins);
+
+        int m=1;
+        ws->setColumnWidth(1,1,4);
+        ws->setColumnWidth(2,2,15);
+        ws->setColumnWidth(3,3,15);
+        ws->setColumnWidth(4,4,15);
+        ws->setColumnWidth(5,5,20);
+        ws->setColumnWidth(6,6,11);
+        ws->setColumnWidth(7,7,6);
+        ws->setColumnWidth(8,8,11);
+        ws->setColumnWidth(9,9,6);
+        ws->setColumnWidth(10,10,9);
+        ws->setColumnWidth(11,11,10);
+        ws->setColumnWidth(12,12,10);
+        ws->setColumnWidth(13,13,10);
+        ws->setColumnWidth(14,14,10);
+        ws->setColumnWidth(15,15,10);
+        ws->setColumnWidth(16,16,10);
+        ws->setColumnWidth(17,17,10);
+        ws->setColumnWidth(18,18,11);
+        int num=1;
+
+        for (int i=0; i<rabcount; i++){
+            QString rab_sub=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,10)).toString();
+            int id_rab=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,0)).toInt();
+            if (!sel.contains(id_rab) || rab_sub!=sub){
+                continue;
+            }
+
+            QString firstName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,1)).toString();
+            QString lastName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,2)).toString();
+            QString middleName=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,3)).toString();
+            QString prof=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,6)).toString();
+            QDate beg=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,8),Qt::EditRole).toDate();
+            QDate end=ui->listViewRab->model()->data(ui->listViewRab->model()->index(i,9),Qt::EditRole).toDate();
+
+            QVector<QVector<QVariant>> data = getShortData(id_rab,beg,end);
+            sumData sum = getSum(id_rab,beg,end);
+
+            ws->mergeCells(CellRange(m,1,m+1,1),headerFormat);
+            ws->writeString(m,1,QString("№"),headerFormat);
+            ws->mergeCells(CellRange(m,2,m,4),headerFormat);
+            ws->writeString(m,2,QString("Фамилия Имя Отчество"),headerFormat);
+
+            ws->mergeCells(CellRange(m+1,2,m+1,4),headerFormat);
+            ws->writeString(m+1,2,QString("Наименование работ"),headerFormat);
+
+            ws->mergeCells(CellRange(m,5,m+1,5),headerFormat);
+            ws->writeString(m,5,QString("Профессия, разряд"),headerFormat);
+
+            ws->mergeCells(CellRange(m,6,m+1,6),headerFormat);
+            ws->writeString(m,6,QString("Начислено"),headerFormat);
+
+            ws->mergeCells(CellRange(m,7,m+1,7),headerFormat);
+            ws->writeString(m,7,QString("Р. дн."),headerFormat);
+
+            ws->mergeCells(CellRange(m,8,m+1,8),headerFormat);
+            ws->writeString(m,8,QString("Кол-во"),headerFormat);
+
+            ws->mergeCells(CellRange(m,9,m+1,9),headerFormat);
+            ws->writeString(m,9,QString("Ед. изм."),headerFormat);
+
+            ws->mergeCells(CellRange(m,10,m+1,10),headerFormat);
+            ws->writeString(m,10,QString("Тариф"),headerFormat);
+
+            ws->mergeCells(CellRange(m,11,m+1,11),headerFormat);
+            ws->writeString(m,11,QString("Сдельная оплата"),headerFormat);
+
+            ws->mergeCells(CellRange(m,12,m+1,12),headerFormat);
+            ws->writeString(m,12,QString("Оплата за вредн."),headerFormat);
+
+            ws->mergeCells(CellRange(m,13,m+1,13),headerFormat);
+            ws->writeString(m,13,QString("Оплата выходн."),headerFormat);
+
+            ws->mergeCells(CellRange(m,14,m+1,14),headerFormat);
+            ws->writeString(m,14,QString("Ночная смена"),headerFormat);
+
+            ws->mergeCells(CellRange(m,15,m,17),headerFormat);
+            ws->writeString(m,15,QString("Премия"),headerFormat);
+            ws->writeString(m+1,15,QString("Кач"),headerFormat);
+            ws->writeString(m+1,16,QString("Норм"),headerFormat);
+            ws->writeString(m+1,17,QString("Мес"),headerFormat);
+
+            ws->mergeCells(CellRange(m,18,m+1,18),headerFormat);
+            ws->writeString(m,18,QString("Начислено"),headerFormat);
+
+            m+=2;
+
+            ws->setRowHeight(m,m,35);
+
+            numFormat.setNumberFormat("0");
+            ws->writeNumeric(m,1,num,numFormat);
+
+            ws->writeString(m,2,firstName,strFormat);
+            ws->writeString(m,3,lastName,strFormat);
+            ws->writeString(m,4,middleName,strFormat);
+            ws->writeString(m,5,prof,strFormat);
+
+            numFormat.setNumberFormat(QString("0.00"));
+            ws->writeNumeric(m,6,sum.total,numFormat);
+
+            numFormat.setNumberFormat("0");
+            ws->writeNumeric(m,7,sum.kvoDay,numFormat);
+            ws->writeBlank(m,8,strFormat);
+            ws->writeBlank(m,9,strFormat);
+            for (int i=10; i<=18; i++){
+                ws->writeString(m,i,tr("руб."),headerFormat);
+            }
+
+            numFormat.setNumberFormat(QString("0.00"));
+
+            m++;
+            int begm=m;
+
+            for (QVector<QVariant> row : data){
+                ws->writeBlank(m,1,numFormat);
+
+                ws->mergeCells(CellRange(m,2,m,7),numFormat);
+                ws->writeString(m,2,row[0].toString(),strFormat);
+
+                numFormat.setNumberFormat(QString("0.0000"));
+                ws->writeNumeric(m,8,row[1].toDouble(),numFormat);
+
+                ws->writeString(m,9,row[2].toString(),strFormat);
+
+                numFormat.setNumberFormat(QString("0.00"));
+                for (int i=3; i<=11; i++){
+                    ws->writeNumeric(m,i+7,row[i].toDouble(),numFormat);
+                }
+                m++;
+            }
+
+            ws->mergeCells(CellRange(begm,1,m-1,1),strFormat);
+            ws->writeString(m,10,QString("ИТОГО:"),strFormat);
+
+            numFormat.setNumberFormat(QString("0.00"));
+            ws->writeNumeric(m,11,sum.zpl,numFormat);
+            ws->writeNumeric(m,12,sum.dopl,numFormat);
+            ws->writeNumeric(m,13,sum.extr,numFormat);
+            ws->writeNumeric(m,14,sum.night,numFormat);
+            ws->writeNumeric(m,15,sum.premk,numFormat);
+            ws->writeNumeric(m,16,sum.premn,numFormat);
+            ws->writeNumeric(m,17,sum.prem,numFormat);
+            ws->writeNumeric(m,18,sum.total,numFormat);
+
+            m++;
+            ws->insertRowBreak(m);
+            m++;
+            num++;
+        }
+
+        QString year=QString::number(ui->dateEditBeg->date().year());
+        QString month=QLocale().standaloneMonthName(ui->dateEditBeg->date().month());
+        QString dat=month+" "+year+QString(" г.");
+        QString org=QString(" (с %1 по %2) ").arg(ui->dateEditBeg->date().toString("dd.MM.yy")).arg(ui->dateEditEnd->date().toString("dd.MM.yy"))+orgName;
+
+        QString headerData=QString("&LРасчет заработной платы за %1&C%2&R&D").arg(dat).arg(org);
+        QString footerData=QString("&L%1").arg(footer);
+
+        ws->setHeaderData(headerData);
+        ws->setFooterData(footerData);
+    }
 
     QDir dir(QDir::homePath());
     QString filename = QFileDialog::getSaveFileName(nullptr,QString::fromUtf8("Сохранить файл"),

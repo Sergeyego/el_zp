@@ -30,6 +30,7 @@ SOURCES += \
     dialogsplit.cpp \
     dialogtabel.cpp \
     doublelineedit.cpp \
+    formboss.cpp \
     formcompare.cpp \
     formjob.cpp \
     formliter.cpp \
@@ -72,6 +73,7 @@ HEADERS += \
     dialogsplit.h \
     dialogtabel.h \
     doublelineedit.h \
+    formboss.h \
     formcompare.h \
     formjob.h \
     formliter.h \
@@ -112,6 +114,7 @@ FORMS += \
     allpressdialog.ui \
     dialogsplit.ui \
     dialogtabel.ui \
+    formboss.ui \
     formcompare.ui \
     formjob.ui \
     formliter.ui \
@@ -140,4 +143,6 @@ DISTFILES += \
 
 RESOURCES += \
     res.qrc
+    
+macx:ICON = ico.icns
 

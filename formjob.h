@@ -79,6 +79,7 @@ private slots:
     void upJob();
     void downJob();
     void split();
+    void showDop();
 };
 
 #endif // FORMJOB_H

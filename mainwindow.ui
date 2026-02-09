@@ -36,7 +36,7 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>25</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -67,6 +67,8 @@
     <addaction name="actionLiter"/>
     <addaction name="actionTarif"/>
     <addaction name="actionMarkType"/>
+    <addaction name="separator"/>
+    <addaction name="actionBoss"/>
    </widget>
    <widget class="QMenu" name="menu_5">
     <property name="title">
@@ -152,6 +154,11 @@
   <action name="actionRecalc">
    <property name="text">
     <string>Пересчет выпуска по упаковке</string>
+   </property>
+  </action>
+  <action name="actionBoss">
+   <property name="text">
+    <string>Начальники подразделений</string>
    </property>
   </action>
  </widget>

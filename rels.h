@@ -15,6 +15,7 @@ public:
     DbSqlRelation *relEd;
     DbSqlRelation *relConn;
     DbSqlRelation *relKaminEmp;
+    DbSqlRelation *relKaminSub;
     DbSqlRelation *relMark;
     DbSqlRelation *relDiam;
     DbSqlRelation *relComp;

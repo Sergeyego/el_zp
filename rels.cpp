@@ -34,6 +34,9 @@ Rels::Rels(QObject *parent) : QObject(parent)
     relKaminEmp->setSort("kamin_empl.str");
     relKaminEmp->model()->setAsync(false);
 
+    relKaminSub = new DbSqlRelation("kamin_sub","id","nam",this);
+    relKaminSub->setSort("kamin_sub.nam");
+
     relMark = new DbSqlRelation("elrtr","id","marka",this);
     relMark->setFilter("elrtr.id>0");
     relMark->setSort("elrtr.marka");

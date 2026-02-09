@@ -66,7 +66,7 @@ private:
     };
     sumData getSum(int id_rab, QDate beg, QDate end);
     QMultiHash<int,tabelData> hlong;
-    QString orgName, sign;
+    QString orgName, normEmpl, normTitle;
     QVector<QVector<QVariant>> getLongData(int id_rab, QDate beg, QDate end);
     QVector<QVector<QVariant>> getShortData(int id_rab, QDate beg, QDate end);
 

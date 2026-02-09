@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     actAction(ui->actionMarkType,&MainWindow::newFormMarkType);
     actAction(ui->actionCompare,&MainWindow::newFormCompare);
     actAction(ui->actionRecalc,&MainWindow::newFormRecalc);
+    actAction(ui->actionBoss,&MainWindow::newFormBoss);
 
     loadSettings();
     QObject::connect(ui->tabWidget,&QTabWidget::tabCloseRequested,this,&MainWindow::closeTab);
@@ -201,6 +202,13 @@ void MainWindow::newFormRecalc()
 {
     if (!exist(sender())){
         addSubWindow(new FormRecalc(),sender());
+    }
+}
+
+void MainWindow::newFormBoss()
+{
+    if (!exist(sender())){
+        addSubWindow(new FormBoss(),sender());
     }
 }
 
