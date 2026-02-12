@@ -14,6 +14,12 @@ namespace Ui {
 class FormCalcWage;
 }
 
+struct empInfo
+{
+    QString emp;
+    QString jobTitle;
+};
+
 class FormCalcWage : public QWidget
 {
     Q_OBJECT
@@ -69,6 +75,7 @@ private:
     QString orgName, normEmpl, normTitle;
     QVector<QVector<QVariant>> getLongData(int id_rab, QDate beg, QDate end);
     QVector<QVector<QVariant>> getShortData(int id_rab, QDate beg, QDate end);
+    empInfo getEmpInfo(QString id_empl);
 
 private slots:
     void upd();

@@ -196,6 +196,24 @@ QVector<QVector<QVariant> > FormCalcWage::getShortData(int id_rab, QDate beg, QD
     return dataShort;
 }
 
+empInfo FormCalcWage::getEmpInfo(QString id_empl)
+{
+    empInfo info;
+    QSqlQuery query;
+    query.prepare("select job, snam from kamin_get_inf(:dat,:id_empl)");
+    query.bindValue(":dat",ui->dateEditEnd->date());
+    query.bindValue(":id_empl",id_empl);
+    if (query.exec()){
+        if (query.next()){
+            info.jobTitle=query.value(0).toString();
+            info.emp=query.value(1).toString();
+        }
+    } else {
+        QMessageBox::critical(this,"Error",query.lastError().text(),QMessageBox::Cancel);
+    }
+    return info;
+}
+
 void FormCalcWage::upd()
 {
     setBlock(true);
@@ -595,9 +613,9 @@ void FormCalcWage::tabel()
     }
 
     for (QString sub : subs){
-        QStringList sub_ls = sub.split('#');
-        QString nameSheet = (sub_ls.size()==2) ? sub_ls.at(1) : tr("Начальник подразделения");
-        QString jobTitle = (sub_ls.size()==2) ? sub_ls.at(0) : tr("Должность");
+        empInfo info=getEmpInfo(sub);
+        QString nameSheet = info.emp.isEmpty() ? tr("Начальник подразделения") : info.emp;
+        QString jobTitle = info.jobTitle.isEmpty() ? tr("Должность") : info.jobTitle;
         if (xlsx.addSheet(nameSheet)){
             xlsx.selectSheet(nameSheet);
         }
